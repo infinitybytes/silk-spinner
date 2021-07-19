@@ -16,9 +16,13 @@
       
       <br />
 
-      <div class="mb-3">
-          <label for="formFileMultiple" class="form-label">Upload multiple files using the 'Browse...' button below</label>
-          <input class="form-control" type="file" id="formFileMultiple" multiple>
+      <div class="mb-3"> 
+          <form action="/upload.html" enctype="multipart/form-data" method="POST">
+            <label for="formFileMultiple" class="form-label">Upload multiple files using the 'Browse...' button below</label>
+            <input class="form-control" type="file" name="files" id="formFileMultiple" multiple>
+            <br />
+            <input class="btn btn-success" type="submit" name="submit" value="Upload Files" />
+          </form>
       </div>  
     </div>
 
