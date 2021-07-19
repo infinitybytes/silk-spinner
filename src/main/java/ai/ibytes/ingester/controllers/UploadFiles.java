@@ -29,8 +29,7 @@ public class UploadFiles {
 
     @PostMapping(path="/upload.html")
     public String handleFileUpload(@RequestParam("files") MultipartFile[] files)    {
-        
-        //storageService.store(file);
+        Arrays.asList(files).parallelStream().forEach(file -> storageService.store(file));
 
         return "redirect:/upload.html";
     }
