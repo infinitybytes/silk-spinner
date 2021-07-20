@@ -23,8 +23,10 @@ import org.springframework.web.multipart.MultipartFile;
 import ai.ibytes.ingester.config.StorageConfig;
 import ai.ibytes.ingester.model.FileUpload;
 import ai.ibytes.ingester.storage.exceptions.StorageException;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class FileSystemStorageService {
 
 	private final Path rootLocation;
@@ -88,6 +90,10 @@ public class FileSystemStorageService {
 		return rootLocation.resolve(filename);
 	}
 
+	public Path loadJson(String id)	{
+		return load( id + ".json" );
+	}
+
 	public Resource loadAsResource(String filename) {
 		try {
 			Path file = load(filename);
@@ -103,6 +109,22 @@ public class FileSystemStorageService {
 		}
 		catch (MalformedURLException e) {
 			throw new StorageException("Could not read file: " + filename, e);
+		}
+	}
+
+	public void deleteFile(FileUpload json)	{
+		try {
+			Files.deleteIfExists(this.rootLocation.resolve(json.getFilename()));
+		} catch (IOException e) {
+			log.error("Unable to delete file for ID {}",json.getId());
+			throw new StorageException("Unable to delete file",e);
+		}
+
+		try {
+			Files.deleteIfExists(this.rootLocation.resolve( json.getId() + ".json" ));
+		} catch (IOException e) {
+			log.error("Unable to delete JSON for ID {}",json.getId());
+			throw new StorageException("Unable to delete JSON",e);
 		}
 	}
 }
