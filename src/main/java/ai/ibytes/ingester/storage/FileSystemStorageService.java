@@ -1,6 +1,7 @@
 package ai.ibytes.ingester.storage;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -8,7 +9,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 import java.util.stream.Stream;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -17,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import ai.ibytes.ingester.config.StorageConfig;
+import ai.ibytes.ingester.model.FileUpload;
 import ai.ibytes.ingester.storage.exceptions.StorageException;
 
 @Service
@@ -24,9 +29,13 @@ public class FileSystemStorageService {
 
 	private final Path rootLocation;
 
+	private ObjectMapper objectMapper;
+
 	@Autowired
 	public FileSystemStorageService(StorageConfig properties) {
 		this.rootLocation = Paths.get(properties.getDiskLocation());
+
+		objectMapper = new ObjectMapper();
 	}
 
 	public void store(MultipartFile file) {
@@ -50,13 +59,24 @@ public class FileSystemStorageService {
 		catch (IOException e) {
 			throw new StorageException("Failed to store file.", e);
 		}
+
+		// File is stored, create JSON record
+		String id = UUID.randomUUID().toString();
+		try {
+			objectMapper.writeValue(new File(this.rootLocation.toFile(), id + ".json"),
+									new FileUpload(id, file.getOriginalFilename(), "UPLOADED")		
+			);
+		} catch (IOException e) {
+			throw new StorageException("Failed to write meta file after file upload.",e);
+		}
 	}
 
 	public Stream<Path> loadAll() {
 		try {
 			return Files.walk(this.rootLocation, 1)
 				.filter(path -> !path.equals(this.rootLocation))
-				.map(this.rootLocation::relativize);
+				.filter(path -> path.getFileName().toString().endsWith(".json"))
+				.map(this.rootLocation::resolve);
 		}
 		catch (IOException e) {
 			throw new StorageException("Failed to read stored files", e);

@@ -28,19 +28,26 @@
           <table id="uploads" class="table display">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Filename</th>
+                <th>File</th>
+                <th>TBD</th>
                 <th>Status</th>
-                <th>Actions</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
             {{#uploads}}
               <tr>
-                <td>{{id}}</td>
-                <td>{{filename}}</td>
+                <td>
+                  <a href="/file.html?id={{id}}">{{filename}}</a><br />
+                  <small>ID: {{id}}</small>
+                </td>
+                <td></td>
                 <td>{{status}}</td>
-                <td>Actions</td>
+                <td>
+                  <div class="btn-group" role="group" aria-label="Actions">
+                    <a class="btn btn-danger" href="/delete.html?id={{id}}">Delete</a>
+                  </div>
+                </td>
               </tr>
             {{/uploads}}
             </tbody>

@@ -23,14 +23,12 @@ public class UploadFiles {
     @GetMapping(path="/upload.html")
     public ModelAndView getUploadPage(Principal user, Map<String, Object> model)   {
         model.put("user",(user!=null) ? user.getName() : "ANON");
-        
         return new ModelAndView("uploadFiles", model);
     }
 
     @PostMapping(path="/upload.html")
     public String handleFileUpload(@RequestParam("files") MultipartFile[] files)    {
         Arrays.asList(files).parallelStream().forEach(file -> storageService.store(file));
-
-        return "redirect:/upload.html";
+        return "redirect:/index.html";
     }
 }
