@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -41,5 +42,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .exceptionHandling().accessDeniedPage("/404")
             ;
+    }
+
+	@Bean
+	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		return http
+		.requiresChannel(channel -> 
+			channel.anyRequest().requiresSecure())
+		.authorizeRequests(authorize ->
+			authorize.anyRequest().permitAll())
+		.build();
     }
 }
