@@ -31,7 +31,7 @@ public class FileSystemStorageService {
 
 	private final Path rootLocation;
 
-	private ObjectMapper objectMapper;
+	private final ObjectMapper objectMapper;
 
 	@Autowired
 	public FileSystemStorageService(StorageConfig properties) {
@@ -77,6 +77,7 @@ public class FileSystemStorageService {
 		try {
 			return Files.walk(this.rootLocation, 1)
 				.filter(path -> !path.equals(this.rootLocation))
+				.filter(path -> !path.getFileName().toString().endsWith("users.json"))
 				.filter(path -> path.getFileName().toString().endsWith(".json"))
 				.map(this.rootLocation::resolve);
 		}
