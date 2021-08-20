@@ -40,6 +40,10 @@ public class FileSystemStorageService {
 		objectMapper = new ObjectMapper();
 	}
 
+	public Path getRootLocation()	{
+		return this.rootLocation;
+	}
+
 	public void store(MultipartFile file) {
 		try {
 			if (file.isEmpty()) {

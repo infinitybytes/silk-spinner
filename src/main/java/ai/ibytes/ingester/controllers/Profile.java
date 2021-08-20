@@ -1,5 +1,6 @@
 package ai.ibytes.ingester.controllers;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +17,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import ai.ibytes.ingester.model.SystemUser;
+import ai.ibytes.ingester.storage.UserStoreService;
+import lombok.Synchronized;
+import lombok.extern.slf4j.Slf4j;
+
 @Controller
+@Slf4j
 public class Profile {
 
     @Autowired
     public InMemoryUserDetailsManager users;
+
+    @Autowired
+    public UserStoreService userStoreService;
 
     @GetMapping( path = "/profile.html")
     public ModelAndView getIndexPage(Principal user, Map<String, Object> model)   {
@@ -58,13 +68,41 @@ public class Profile {
             msgs.add("Password successfully changed.");
 
             PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-            
+            String password = encoder.encode(pass1);
             UserDetails sysUser = users.loadUserByUsername(user.getName());
-            users.changePassword(sysUser.getPassword(), encoder.encode(pass1) );
+            users.changePassword(sysUser.getPassword(), password);
 
+            // Update disk to persist
+            updateUserOnDisk(user.getName(), password);
+
+            // message the user
             model.put("msgs", msgs);
         }
 
         return getIndexPage(user, model);
+    }
+
+    @Synchronized
+    private void updateUserOnDisk(String username, String password) {
+        List<SystemUser> sysUsers = new ArrayList<>();
+        try {
+            userStoreService.loadUsers().stream().forEach( user -> {
+                if(user.getUsername().equals(username))    {
+                    // update password first before adding
+                    user.setPassword(password);
+                }
+
+                // add to list
+                sysUsers.add(user);
+            });
+        } catch (IOException e) {
+            log.error("Error updating user on disk, changes not synced!",e);
+        }
+
+        try {
+            userStoreService.saveUsers(sysUsers);
+        } catch (IOException e) {
+            log.error("Error updating user on disk, changes not synced!",e);
+        }
     }
 }
