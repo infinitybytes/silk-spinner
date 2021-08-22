@@ -61,9 +61,25 @@ public class Admin {
         List<String> errors = new ArrayList<>();
         List<String> msgs = new ArrayList<>();
 
-        msgs.add("Deleted user.");
+        users.deleteUser(username);
 
-        model.put("msgs",msgs);
+        // reload disk
+        List<SystemUser> sysUsers;
+        try {
+            sysUsers = userStoreService.loadUsers();
+            sysUsers.remove(new SystemUser(username, "", "ADMIN"));
+            userStoreService.saveUsers(sysUsers);
+        } catch (IOException e) {
+            log.error("Unable to delete user from disk.",e);
+            errors.add("Unable to delete user from disk.");
+            model.put("errors",errors);
+        }
+
+        if(errors.size()==0) {
+            msgs.add("Deleted user.");
+            model.put("msgs",msgs);
+        }
+
         return getUserPage(user, model);
     }
 
