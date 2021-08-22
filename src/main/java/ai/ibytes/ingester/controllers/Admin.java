@@ -43,7 +43,28 @@ public class Admin {
         // @todo centralize
         model.put("user",(user!=null) ? user.getName() : "ANON");
 
+        try {
+            List<SystemUser> sysUsers = userStoreService.loadUsers();
+            model.put("users",sysUsers);
+        } catch (IOException e) {
+            log.error("Unable to load user list.",e);
+        }
+        
         return new ModelAndView("acp-users", model);
+    }
+
+    @GetMapping( path = "/acp-users-delete.html")
+    public ModelAndView deleteUser(Principal user, Map<String, Object> model, @RequestParam("u") String username)   {
+        // @todo centralize
+        model.put("user",(user!=null) ? user.getName() : "ANON");
+        
+        List<String> errors = new ArrayList<>();
+        List<String> msgs = new ArrayList<>();
+
+        msgs.add("Deleted user.");
+
+        model.put("msgs",msgs);
+        return getUserPage(user, model);
     }
 
     @PostMapping(path="/acp-users.html")
