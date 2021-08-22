@@ -1,2 +1,2 @@
 # ingester
-A/V ingester for kshires project
+A/V ingester

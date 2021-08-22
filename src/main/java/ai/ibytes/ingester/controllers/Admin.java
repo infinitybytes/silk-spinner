@@ -1,18 +1,35 @@
 package ai.ibytes.ingester.controllers;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import ai.ibytes.ingester.model.SystemUser;
+import ai.ibytes.ingester.storage.UserStoreService;
+import lombok.extern.slf4j.Slf4j;
+
 @Controller
+@Slf4j
 public class Admin {
+    @Autowired
+    public InMemoryUserDetailsManager users;
+
+    @Autowired
+    public UserStoreService userStoreService;
+
     @GetMapping( path = "/acp.html")
     public ModelAndView getAdminPage(Principal user, Map<String, Object> model)   {
         // @todo centralize
@@ -38,14 +55,41 @@ public class Admin {
             errors.add("Username and password cannot be blank.");
         }
 
-        if(errors.size()>0) {
-            model.put("errors", errors);
+        if(password.length()<8) {
+            errors.add("Password length has to be at least eight characters or numbers.");
         }
 
         if(errors.size()==0)    {
             // Create user
+            PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+            String pass = encoder.encode(password);
+
+            SystemUser newuser = new SystemUser(username, pass, "ADMIN");
+            users.createUser(User.builder()
+                .username(username)
+                .password(pass)
+                .roles("ADMIN")
+                .build());
 
             // Save to disk
+            try {
+                List<SystemUser> sysUsers = userStoreService.loadUsers();
+                sysUsers.add(newuser);
+                userStoreService.saveUsers(sysUsers);
+
+                msgs.add("New user added.");
+                model.put("msgs", msgs);
+            } catch (IOException e) {
+                log.error("Unable to save new user.",e);
+                errors.add("Unable to save new user.");
+            } catch (Exception e) {
+                log.error("Unable to save new user.",e);
+                errors.add("Unable to save new user.");
+            }
+        }
+
+        if(errors.size()>0) {
+            model.put("errors", errors);
         }
 
         return getUserPage(user, model);

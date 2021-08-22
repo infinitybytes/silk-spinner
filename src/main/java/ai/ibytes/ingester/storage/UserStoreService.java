@@ -2,7 +2,7 @@ package ai.ibytes.ingester.storage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -25,8 +25,15 @@ public class UserStoreService {
 	private ObjectMapper objectMapper = new ObjectMapper();
 
     public List<SystemUser> loadUsers() throws JsonParseException, JsonMappingException, IOException   {
+        List<SystemUser> sysUsers = new ArrayList<>();
+
         log.info("Loading users from disk.");
-		return Arrays.asList(objectMapper.readValue(storageService.load("users.json").toFile(), SystemUser[].class));
+		SystemUser[] users = objectMapper.readValue(storageService.load("users.json").toFile(), SystemUser[].class);
+        for( SystemUser u : users )   {
+            sysUsers.add(u);
+        }
+
+        return sysUsers;
     }
 
     public void saveUsers(List<SystemUser> users) throws JsonGenerationException, JsonMappingException, IOException {
