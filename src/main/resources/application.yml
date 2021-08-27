@@ -12,5 +12,8 @@ spring:
             max-file-size: 1GB
             max-request-size: 1GB
 
+app:
+  rootDir: /data/app
+  
 storage:
     diskLocation: /data/app/store
