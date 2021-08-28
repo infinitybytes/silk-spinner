@@ -26,6 +26,27 @@ public class ExternalProcess {
     @Autowired
     private StorageConfig storageConfig;
 
+    public void convertBitrate(String filename) throws IOException, InterruptedException   {
+        Path pathToFile = (isWindows) ? Path.of("C:\\", storageConfig.getDiskLocation(), filename) : Path.of(storageConfig.getDiskLocation(), filename);
+
+        log.info("Running external conversion process on {}",pathToFile.toString());
+
+        ProcessBuilder builder = new ProcessBuilder().inheritIO();
+        if (isWindows) {
+            builder.command("cmd.exe", "/c", "convert-32b-to-16b-mono.bat", pathToFile.toString());
+        } else {
+            builder.command("sh", "-c", "convert-32b-to-16b-mono.sh", pathToFile.toString());
+        }
+        builder.directory(new File(appConfig.getRootDir(), "bin"));
+
+        // Kick off the process and monitor
+        Process process = builder.start();
+
+        // Clean exit?
+        int exitCode = process.waitFor();
+        assert exitCode == 0;
+    }
+
     public void generateWaveform(String filename) throws IOException, InterruptedException   {
         Path pathToFile = (isWindows) ? Path.of("C:\\", storageConfig.getDiskLocation(), filename) : Path.of(storageConfig.getDiskLocation(), filename);
 

@@ -73,7 +73,7 @@ public class FileSystemStorageService {
 			FileUpload fileUpload = new FileUpload();
 			fileUpload.setId(id);
 			fileUpload.setFilename(file.getOriginalFilename());
-			fileUpload.setStatus("UPLOADED");
+			fileUpload.setStatus(FileUpload.STATUS.UPLOADED);
 			objectMapper.writeValue(
 				new File(this.rootLocation.toFile(), id + ".json"),
 				fileUpload		
@@ -87,7 +87,7 @@ public class FileSystemStorageService {
 	public void save(FileUpload fileUpload)	{
 		log.info("Saving {}.json", fileUpload.getId());
 		log.debug("File: {}", fileUpload.toString());
-		
+
 		try {
 			objectMapper.writeValue(
 					new File(this.rootLocation.toFile(), fileUpload.getId() + ".json"),
