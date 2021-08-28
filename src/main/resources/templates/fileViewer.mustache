@@ -21,18 +21,24 @@
         <br />
 
         <div class="row">
-            <div class="col-8">
+            <div class="col-10">
                 File Viewer: {{json.filename}}<br />
                 <small>ID: {{json.id}}</small>
             </div>
-            <div class="col-4">
+            <div class="col-2">
                 <a class="btn btn-primary" href="/fileBytes.html?id={{json.id}}">Download Video</a>
             </div>
         </div>
 
         <br />
-        <h3>A/V Analysis</h3>
-
+        <h3>Analysis</h3>
+        <div class="mb-3">
+            <div id="waveform" style="border:1px solid grey"></div>
+        </div>        
+        <div class="mb-3">
+            <button class="btn btn-primary" data-action="play" onclick="wavesurfer.playPause()">Play / Pause</button>
+        </div>
+        
         <div class="mb-3">
             <div class="table-responsive">
             <table id="fileTranscript" class="table display">
@@ -58,6 +64,17 @@
     <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
 	  <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/wavesurfer.js"></script>
+    <script>
+        var wavesurfer = WaveSurfer.create({
+            container: '#waveform',
+            waveColor: 'grey',
+            progressColor: 'blue',
+            barHeight:5
+        });
+
+        wavesurfer.load('/fileBytes.html?id={{json.id}}');
+    </script>
 
     <script type="text/javascript" class="init">
         $(document).ready(function() {
