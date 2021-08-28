@@ -9,9 +9,11 @@ server:
 spring:
     servlet:
         multipart:
-            max-file-size: 1GB
-            max-request-size: 1GB
-
+            max-file-size: 10GB
+            max-request-size: 10GB
+            file-size-threshold: 100MB
+            location: /data/app/temp
+            
 app:
   rootDir: /data/app
   

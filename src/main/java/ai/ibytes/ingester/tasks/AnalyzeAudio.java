@@ -36,7 +36,7 @@ public class AnalyzeAudio {
 
     @Scheduled(initialDelay = 3000, fixedRate = 15000)
     public void convertAudioRate()  {
-        log.info("Converting bitrate from 32000 to 16000");
+        log.info("Converating sample rates and channel");
         storageService.loadAll().forEach(path -> {
             try {
                 FileUpload f = (FileUpload)objectMapper.readValue(path.toAbsolutePath().toFile(), FileUpload.class);

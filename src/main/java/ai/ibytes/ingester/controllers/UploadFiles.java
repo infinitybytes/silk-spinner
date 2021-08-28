@@ -13,8 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import ai.ibytes.ingester.storage.FileSystemStorageService;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
+@Slf4j
 public class UploadFiles {
 
     @Autowired
@@ -28,7 +30,14 @@ public class UploadFiles {
 
     @PostMapping(path="/upload.html")
     public String handleFileUpload(@RequestParam("files") MultipartFile[] files)    {
-        Arrays.asList(files).parallelStream().forEach(file -> storageService.store(file));
+        Arrays.asList(files).parallelStream().forEach(file -> {
+            if(file.getOriginalFilename().endsWith(".zip")) {
+                log.info("Handling ZIP");
+            }
+            else {
+                storageService.store(file);
+            }
+        });
         return "redirect:/index.html";
     }
 }
