@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ai.ibytes.ingester.config.StorageConfig;
 import ai.ibytes.ingester.model.FileUpload;
 import ai.ibytes.ingester.storage.exceptions.StorageException;
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -69,11 +70,32 @@ public class FileSystemStorageService {
 		// File is stored, create JSON record
 		String id = UUID.randomUUID().toString();
 		try {
-			objectMapper.writeValue(new File(this.rootLocation.toFile(), id + ".json"),
-									new FileUpload(id, file.getOriginalFilename(), "UPLOADED")		
+			FileUpload fileUpload = new FileUpload();
+			fileUpload.setId(id);
+			fileUpload.setFilename(file.getOriginalFilename());
+			fileUpload.setStatus("UPLOADED");
+			objectMapper.writeValue(
+				new File(this.rootLocation.toFile(), id + ".json"),
+				fileUpload		
 			);
 		} catch (IOException e) {
 			throw new StorageException("Failed to write meta file after file upload.",e);
+		}
+	}
+
+	@Synchronized
+	public void save(FileUpload fileUpload)	{
+		log.info("Saving {}.json", fileUpload.getId());
+		log.debug("File: {}", fileUpload.toString());
+		
+		try {
+			objectMapper.writeValue(
+					new File(this.rootLocation.toFile(), fileUpload.getId() + ".json"),
+					fileUpload
+			);
+		} catch (IOException e) {
+			log.error("Unable to save file metadata: {}",e);
+			throw new StorageException("Failed to save file.",e);
 		}
 	}
 

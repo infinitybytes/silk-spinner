@@ -42,7 +42,11 @@
                   <a href="/file.html?id={{id}}">{{filename}}</a><br />
                   <small>ID: {{id}}</small>
                 </td>
-                <td></td>
+                <td>
+                  {{#waveform}}
+                    <img src="/fileWaveform.html?id={{id}}" height="64" width="128" />
+                  {{/waveform}}
+                </td>
                 <td></td>
                 <td>{{status}}</td>
                 <td>

@@ -73,4 +73,28 @@ public class FileViewer {
             return null;
         }
     }
+
+    @GetMapping("/fileWaveform.html")
+    @ResponseBody FileSystemResource getFileWaveform(Principal user, @RequestParam("id") String id, HttpServletResponse response)   {
+        log.info("Retrieving waveform for ID {}", id);
+        FileUpload fileJson = new FileUpload();
+
+        try {
+            fileJson = objectMapper.readValue(storageService.loadJson(id).toFile(), FileUpload.class);
+        } catch (IOException e) {
+            log.error("Unable to load the JSON for ID {}",id);
+        }
+
+        // Load the actual file
+        Resource waveFormPic = storageService.loadAsResource(fileJson.getFilename() + ".png");
+
+        response.setContentType(MediaType.IMAGE_PNG_VALUE);
+        
+        try {
+            return new FileSystemResource(waveFormPic.getFile());
+        } catch (IOException e) {
+            log.error("Unable to get filebytes for ID {}", id);
+            return null;
+        }
+    }
 }

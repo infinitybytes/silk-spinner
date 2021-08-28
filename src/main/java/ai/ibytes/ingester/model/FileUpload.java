@@ -11,4 +11,5 @@ public class FileUpload {
     private String id;
     private String filename;
     private String status;
+    private boolean waveform;
 }

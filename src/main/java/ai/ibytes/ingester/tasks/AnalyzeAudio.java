@@ -43,6 +43,8 @@ public class AnalyzeAudio {
                 if(!Files.exists(Path.of(storageService.getRootLocation().toString(), f.getFilename() + ".png")))   {
                     log.info( "{} needs a waveform, generating", f.getFilename());
                     externalProcess.generateWaveform(f.getFilename());
+                    f.setWaveform(true);
+                    storageService.save(f);
                     log.info( "Finished generating waveform for {}", f.getFilename());
                 }
 
