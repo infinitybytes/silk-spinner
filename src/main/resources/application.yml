@@ -19,3 +19,4 @@ app:
   
 storage:
     diskLocation: /data/app/store
+    tempLocation: /data/app/temp

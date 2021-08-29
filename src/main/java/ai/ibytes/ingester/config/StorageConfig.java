@@ -8,4 +8,5 @@ import lombok.Data;
 @Data
 public class StorageConfig {
     private String diskLocation;
+    private String tempLocation;
 }

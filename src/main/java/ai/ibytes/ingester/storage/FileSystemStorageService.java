@@ -31,12 +31,14 @@ import lombok.extern.slf4j.Slf4j;
 public class FileSystemStorageService {
 
 	private final Path rootLocation;
+	private final Path tempLocation;
 
 	private final ObjectMapper objectMapper;
 
 	@Autowired
 	public FileSystemStorageService(StorageConfig properties) {
 		this.rootLocation = Paths.get(properties.getDiskLocation());
+		this.tempLocation = Paths.get(properties.getTempLocation());
 
 		objectMapper = new ObjectMapper();
 	}
@@ -45,41 +47,106 @@ public class FileSystemStorageService {
 		return this.rootLocation;
 	}
 
-	public void store(MultipartFile file) {
-		try {
-			if (file.isEmpty()) {
-				throw new StorageException("Failed to store empty file.");
-			}
+	public Path getTempLocation()	{
+		return this.tempLocation;
+	}
+
+	public void store(File file) {		
+		if (!file.exists()) {
+			throw new StorageException("Failed to store non-existant file.");
+		}
+
+		// Only allow WAV from temp
+		if(file.getName().toUpperCase().endsWith(".WAV")) {
 			Path destinationFile = this.rootLocation.resolve(
-					Paths.get(file.getOriginalFilename()))
-					.normalize().toAbsolutePath();
+				Paths.get(file.getName()))
+				.normalize().toAbsolutePath();
 			if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
 				// This is a security check
 				throw new StorageException(
 						"Cannot store file outside current directory.");
 			}
-			try (InputStream inputStream = file.getInputStream()) {
-				Files.copy(inputStream, destinationFile,
-					StandardCopyOption.REPLACE_EXISTING);
+			
+			// Move on disk
+			file.renameTo(destinationFile.toFile());
+
+			// File is stored, create JSON record
+			String id = UUID.randomUUID().toString();
+			try {
+				FileUpload fileUpload = new FileUpload();
+				fileUpload.setId(id);
+				fileUpload.setFilename(file.getName());
+				fileUpload.setStatus(FileUpload.STATUS.UPLOADED);
+				objectMapper.writeValue(
+					new File(this.rootLocation.toFile(), id + ".json"),
+					fileUpload		
+				);
+			} catch (IOException e) {
+				throw new StorageException("Failed to write meta file after file upload.",e);
+			}
+		}
+		else {
+			throw new StorageException("Unsupported file type.");
+		}
+	}
+
+	public void store(MultipartFile file) {
+		try {
+			if (file.isEmpty()) {
+				throw new StorageException("Failed to store empty file.");
+			}
+
+			// Only allow ZIP or WAV
+			if(file.getOriginalFilename().toUpperCase().endsWith(".ZIP"))	{
+				// store ZIP in temp and let the task pick it up
+				Path destinationFile = this.tempLocation.resolve(
+					Paths.get(file.getOriginalFilename()))
+					.normalize().toAbsolutePath();
+				if (!destinationFile.getParent().equals(this.tempLocation.toAbsolutePath())) {
+					// This is a security check
+					throw new StorageException(
+							"Cannot store file outside current directory.");
+				}
+				try (InputStream inputStream = file.getInputStream()) {
+					Files.copy(inputStream, destinationFile,
+						StandardCopyOption.REPLACE_EXISTING);
+				}
+			}
+			else if(file.getOriginalFilename().toUpperCase().endsWith(".WAV")) {
+				Path destinationFile = this.rootLocation.resolve(
+					Paths.get(file.getOriginalFilename()))
+					.normalize().toAbsolutePath();
+				if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
+					// This is a security check
+					throw new StorageException(
+							"Cannot store file outside current directory.");
+				}
+				try (InputStream inputStream = file.getInputStream()) {
+					Files.copy(inputStream, destinationFile,
+						StandardCopyOption.REPLACE_EXISTING);
+				}
+
+				// File is stored, create JSON record
+				String id = UUID.randomUUID().toString();
+				try {
+					FileUpload fileUpload = new FileUpload();
+					fileUpload.setId(id);
+					fileUpload.setFilename(file.getOriginalFilename());
+					fileUpload.setStatus(FileUpload.STATUS.UPLOADED);
+					objectMapper.writeValue(
+						new File(this.rootLocation.toFile(), id + ".json"),
+						fileUpload		
+					);
+				} catch (IOException e) {
+					throw new StorageException("Failed to write meta file after file upload.",e);
+				}
+			}
+			else {
+				throw new StorageException("Unsupported file type.");
 			}
 		}
 		catch (IOException e) {
 			throw new StorageException("Failed to store file.", e);
-		}
-
-		// File is stored, create JSON record
-		String id = UUID.randomUUID().toString();
-		try {
-			FileUpload fileUpload = new FileUpload();
-			fileUpload.setId(id);
-			fileUpload.setFilename(file.getOriginalFilename());
-			fileUpload.setStatus(FileUpload.STATUS.UPLOADED);
-			objectMapper.writeValue(
-				new File(this.rootLocation.toFile(), id + ".json"),
-				fileUpload		
-			);
-		} catch (IOException e) {
-			throw new StorageException("Failed to write meta file after file upload.",e);
 		}
 	}
 
@@ -111,6 +178,30 @@ public class FileSystemStorageService {
 			throw new StorageException("Failed to read stored files", e);
 		}
 
+	}
+
+	public Stream<Path> loadZipFromTemp() {
+		try {
+			return Files.walk(this.tempLocation, 1)
+				.filter(path -> !path.equals(this.tempLocation))
+				.filter(path -> path.getFileName().toString().toUpperCase().endsWith(".ZIP"))
+				.map(this.tempLocation::resolve);
+		}
+		catch (IOException e) {
+			throw new StorageException("Failed to read stored temp files", e);
+		}
+	}
+
+	public Stream<Path> loadWavFromTemp() {
+		try {
+			return Files.walk(this.tempLocation, 1)
+				.filter(path -> !path.equals(this.tempLocation))
+				.filter(path -> path.getFileName().toString().toUpperCase().endsWith(".WAV"))
+				.map(this.tempLocation::resolve);
+		}
+		catch (IOException e) {
+			throw new StorageException("Failed to read stored temp files", e);
+		}
 	}
 
 	public Path load(String filename) {
