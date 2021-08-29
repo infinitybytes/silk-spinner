@@ -17,29 +17,10 @@
   <body>
     <div class="container">
       {{>layout/navbar}}
-      
-      <br />
 
       <div class="mb-3">
         Warning, messing with these settings may void your warranty :)
       </div>
-
-      {{#msgs.size}}
-        <div class="alert alert-success d-flex align-items-center" role="alert">
-          <div>
-              {{msgs}}    
-          </div>
-        </div>
-      {{/msgs.size}}
-      
-      {{#errors.size}}
-        <div class="alert alert-danger d-flex align-items-center" role="alert">
-          <div>
-              {{errors}}    
-          </div>
-        </div>
-      {{/errors.size}}
-
         <div class="row">
             <div class="col-3">
                 <div class="list-group">

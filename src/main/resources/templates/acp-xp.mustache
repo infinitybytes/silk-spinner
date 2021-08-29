@@ -17,47 +17,29 @@
   <body>
     <div class="container">
       {{>layout/navbar}}
-      
-      <br />
 
       <div class="mb-3">
         Warning, messing with these settings may void your warranty :)
       </div>
-
-      {{#msgs.size}}
-        <div class="alert alert-success d-flex align-items-center" role="alert">
-          <div>
-              {{msgs}}    
-          </div>
-        </div>
-      {{/msgs.size}}
       
-      {{#errors.size}}
-        <div class="alert alert-danger d-flex align-items-center" role="alert">
-          <div>
-              {{errors}}    
+      <div class="row">
+          <div class="col-3">
+              <div class="list-group">
+                  <a href="/acp.html" class="list-group-item list-group-item-action">
+                      System Settings
+                  </a>
+                  <a href="/acp-users.html" class="list-group-item list-group-item-action">
+                      User Management
+                  </a>
+                  <a href="acp-xp.html" class="list-group-item list-group-item-action active" aria-current="true">
+                      External Processes
+                  </a>
+              </div>
+          </div> 
+          <div class="col-9">
+
           </div>
-        </div>
-      {{/errors.size}}
-
-        <div class="row">
-            <div class="col-3">
-                <div class="list-group">
-                    <a href="/acp.html" class="list-group-item list-group-item-action">
-                        System Settings
-                    </a>
-                    <a href="/acp-users.html" class="list-group-item list-group-item-action">
-                        User Management
-                    </a>
-                    <a href="acp-xp.html" class="list-group-item list-group-item-action active" aria-current="true">
-                        External Processes
-                    </a>
-                </div>
-            </div> 
-            <div class="col-9">
-
-            </div>
-        </div>
+      </div>
     </div>
 
     <div class="container">

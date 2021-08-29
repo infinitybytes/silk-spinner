@@ -26,3 +26,20 @@
     </div>
   </div>
 </nav>
+<div class="mb-3"></div>
+
+{{#msgs.size}}
+  <div class="alert alert-success d-flex align-items-center" role="alert">
+    <div>
+        {{msgs}}    
+    </div>
+  </div>
+{{/msgs.size}}
+
+{{#errors.size}}
+  <div class="alert alert-danger d-flex align-items-center" role="alert">
+    <div>
+        {{errors}}    
+    </div>
+  </div>
+{{/errors.size}}

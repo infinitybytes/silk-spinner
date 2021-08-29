@@ -17,95 +17,77 @@
   <body>
     <div class="container">
       {{>layout/navbar}}
-      
-      <br />
 
       <div class="mb-3">
         Warning, messing with these settings may void your warranty :)
       </div>
 
-      {{#msgs.size}}
-        <div class="alert alert-success d-flex align-items-center" role="alert">
-          <div>
-              {{msgs}}    
-          </div>
-        </div>
-      {{/msgs.size}}
-      
-      {{#errors.size}}
-        <div class="alert alert-danger d-flex align-items-center" role="alert">
-          <div>
-              {{errors}}    
-          </div>
-        </div>
-      {{/errors.size}}
+      <div class="row">
+          <div class="col-3">
+              <div class="list-group">
+                  <a href="/acp.html" class="list-group-item list-group-item-action">
+                      System Settings
+                  </a>
+                  <a href="/acp-users.html" class="list-group-item list-group-item-action active" aria-current="true">
+                      User Management
+                  </a>
+                  <a href="acp-xp.html" class="list-group-item list-group-item-action">
+                      External Processes
+                  </a>
+              </div>
+          </div> 
+          <div class="col-9">
+            <div class="card">
+              <div class="card-header">
+                Create User
+              </div>
+              <div class="card-body">
+                <form method="POST" action="/acp-users.html">
+                  <p class="card-text">
+                    <label for="username" class="form-label">Username:</label>
+                    <input type="text" class="form-control" name="username" id="username" />
 
-        <div class="row">
-            <div class="col-3">
-                <div class="list-group">
-                    <a href="/acp.html" class="list-group-item list-group-item-action">
-                        System Settings
-                    </a>
-                    <a href="/acp-users.html" class="list-group-item list-group-item-action active" aria-current="true">
-                        User Management
-                    </a>
-                    <a href="acp-xp.html" class="list-group-item list-group-item-action">
-                        External Processes
-                    </a>
-                </div>
-            </div> 
-            <div class="col-9">
-              <div class="card">
-                <div class="card-header">
-                  Create User
-                </div>
-                <div class="card-body">
-                  <form method="POST" action="/acp-users.html">
-                    <p class="card-text">
-                      <label for="username" class="form-label">Username:</label>
-                      <input type="text" class="form-control" name="username" id="username" />
+                    <label for="pass1" class="form-label">Password:</label>
+                    <input type="password" class="form-control" name="pass1" id="pass1" />
+                  </p>
+                  <input type="submit" class="btn btn-primary" value="Create User" />
+                </form>
+              </div>
+            </div>
 
-                      <label for="pass1" class="form-label">Password:</label>
-                      <input type="password" class="form-control" name="pass1" id="pass1" />
-                    </p>
-                    <input type="submit" class="btn btn-primary" value="Create User" />
-                  </form>
+            <br />
+            
+            <div class="card">
+              <div class="card-header">
+                System Users
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table id="users" class="table display">
+                    <thead>
+                      <tr>
+                        <th>Username</th>
+                        <th>Roles</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {{#users}}
+                      <tr>
+                        <td>{{username}}</td>
+                        <td>{{roles}}
+                        <td>
+                          <div class="btn-group" role="group" aria-label="Actions">
+                            <a class="btn btn-danger" href="/acp-users-delete.html?u={{username}}">Delete</a>
+                          </div>
+                        </td>
+                      </tr>
+                    {{/users}}
+                    </tbody>
+                  </table>
                 </div>
               </div>
-
-              <br />
-              
-              <div class="card">
-                <div class="card-header">
-                  System Users
-                </div>
-                <div class="card-body">
-                  <div class="table-responsive">
-                    <table id="users" class="table display">
-                      <thead>
-                        <tr>
-                          <th>Username</th>
-                          <th>Roles</th>
-                          <th></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                      {{#users}}
-                        <tr>
-                          <td>{{username}}</td>
-                          <td>{{roles}}
-                          <td>
-                            <div class="btn-group" role="group" aria-label="Actions">
-                              <a class="btn btn-danger" href="/acp-users-delete.html?u={{username}}">Delete</a>
-                            </div>
-                          </td>
-                        </tr>
-                      {{/users}}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-            </div>
+          </div>
         </div>
     </div>
 
