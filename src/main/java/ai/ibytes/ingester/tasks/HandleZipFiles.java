@@ -1,7 +1,6 @@
 package ai.ibytes.ingester.tasks;
 
 import java.io.IOException;
-import java.nio.file.FileSystem;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
