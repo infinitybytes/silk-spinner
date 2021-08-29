@@ -1,6 +1,7 @@
 package ai.ibytes.ingester.tasks;
 
 import java.io.IOException;
+import java.nio.file.FileSystem;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -49,6 +50,13 @@ public class HandleZipFiles {
         storageService.loadWavFromTemp().forEach(wavFile -> {
             // Store in rootLoc
             storageService.store(wavFile.toFile());
+
+            // Remove file
+            try {
+                FileSystemUtils.deleteRecursively(wavFile);
+            } catch (IOException e) {
+                log.error("Unable to remove {}, recursion may occur!", wavFile);
+            }
         });
         
         log.info("Done checking for WAV in temp");

@@ -1,7 +1,9 @@
 package ai.ibytes.ingester.controllers;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +29,17 @@ public class UploadFiles {
     }
 
     @PostMapping(path="/upload.html")
-    public String handleFileUpload(@RequestParam("files") MultipartFile[] files)    {
-        Arrays.asList(files).parallelStream().forEach(file -> storageService.store(file));
-        return "redirect:/index.html";
+    public ModelAndView handleFileUpload(Principal user, Map<String, Object> model, @RequestParam("files") MultipartFile[] files)    {
+        List<String> msgs = new ArrayList<>();
+
+        Arrays.asList(files).parallelStream().forEach(file -> {
+            storageService.store(file);
+            msgs.add("Processing "+file.getOriginalFilename());
+        });
+
+        if(msgs.size()>0)   {
+            model.put("msgs",msgs);
+        }
+        return getUploadPage(user, model);
     }
 }

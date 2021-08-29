@@ -12,7 +12,7 @@ spring:
             max-file-size: 10GB
             max-request-size: 10GB
             file-size-threshold: 100MB
-            location: /data/app/temp
+            location: /tmp
             
 app:
   rootDir: /data/app

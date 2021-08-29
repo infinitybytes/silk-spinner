@@ -33,10 +33,10 @@ public class ExternalProcess {
 
         ProcessBuilder builder = new ProcessBuilder().inheritIO();
         if (isWindows) {
-            builder.command("cmd.exe", "/c", "unzip.bat", pathToFile.toString());
+            builder.command("cmd.exe", "/c", "unzip.bat", pathToFile.toString(), storageConfig.getTempLocation());
             builder.directory(new File(appConfig.getRootDir(), "bin"));
         } else {
-            builder.command("sh", "-c", "unzip -o", pathToFile.toString());
+            builder.command("sh", "-c", "unzip -o", pathToFile.toString(), "-d", storageConfig.getTempLocation());
         }
 
         // Kick off the process and monitor
