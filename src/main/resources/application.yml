@@ -19,4 +19,5 @@ app:
   
 storage:
     diskLocation: /data/app/store
+    zipLocation: /data/app/zips
     tempLocation: /data/app/temp

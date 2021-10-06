@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FileSystemStorageService {
 
 	private final Path rootLocation;
+	private final Path zipLocation;
 	private final Path tempLocation;
 
 	private final ObjectMapper objectMapper;
@@ -38,6 +39,7 @@ public class FileSystemStorageService {
 	@Autowired
 	public FileSystemStorageService(StorageConfig properties) {
 		this.rootLocation = Paths.get(properties.getDiskLocation());
+		this.zipLocation = Paths.get(properties.getZipLocation());
 		this.tempLocation = Paths.get(properties.getTempLocation());
 
 		objectMapper = new ObjectMapper();
@@ -49,6 +51,10 @@ public class FileSystemStorageService {
 
 	public Path getTempLocation()	{
 		return this.tempLocation;
+	}
+
+	public Path getZipLocation()	{
+		return this.zipLocation;
 	}
 
 	public void store(File file) {		
@@ -107,10 +113,9 @@ public class FileSystemStorageService {
 					throw new StorageException(
 							"Cannot store file outside current directory.");
 				}
-				try (InputStream inputStream = file.getInputStream()) {
-					Files.copy(inputStream, destinationFile,
-						StandardCopyOption.REPLACE_EXISTING);
-				}
+
+				// DO NOT COPY, try to use disk I/O as much as possible
+				file.transferTo(destinationFile);
 			}
 			else if(file.getOriginalFilename().toUpperCase().endsWith(".WAV")) {
 				Path destinationFile = this.rootLocation.resolve(
@@ -121,10 +126,9 @@ public class FileSystemStorageService {
 					throw new StorageException(
 							"Cannot store file outside current directory.");
 				}
-				try (InputStream inputStream = file.getInputStream()) {
-					Files.copy(inputStream, destinationFile,
-						StandardCopyOption.REPLACE_EXISTING);
-				}
+
+				// DO NOT COPY, try to use disk I/O as much as possible
+				file.transferTo(destinationFile);
 
 				// File is stored, create JSON record
 				String id = UUID.randomUUID().toString();
@@ -194,9 +198,9 @@ public class FileSystemStorageService {
 
 	public Stream<Path> loadWavFromTemp() {
 		try {
-			return Files.walk(this.tempLocation, 1)
+			return Files.walk(this.tempLocation, Integer.MAX_VALUE)
 				.filter(path -> !path.equals(this.tempLocation))
-				.filter(path -> path.getFileName().toString().toUpperCase().endsWith(".WAV"))
+				.filter(path -> !path.getFileName().toString().toUpperCase().endsWith(".ZIP"))
 				.map(this.tempLocation::resolve);
 		}
 		catch (IOException e) {
