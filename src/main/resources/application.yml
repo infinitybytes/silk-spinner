@@ -1,18 +1,16 @@
 server:
   ssl:
+    enabled: false
     key-store: KEYSTORE
     key-store-password: KEYSTORE_PASS
     key-store-type: pkcs12
     key-alias: springboot
-  port: 8443
+  port: 8080
 
 spring:
     servlet:
         multipart:
-            max-file-size: 10GB
-            max-request-size: 10GB
-            file-size-threshold: 100MB
-            location: /tmp
+          enabled: false
             
 app:
   rootDir: /data/app

@@ -26,6 +26,7 @@ dependencies {
 		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
 	}
   	implementation "org.springframework.boot:spring-boot-starter-jetty"
+	implementation "commons-fileupload:commons-fileupload:1.4"
 
 	implementation 'edu.cmu.sphinx:sphinx4-core:5prealpha-SNAPSHOT'
     implementation 'edu.cmu.sphinx:sphinx4-data:5prealpha-SNAPSHOT'

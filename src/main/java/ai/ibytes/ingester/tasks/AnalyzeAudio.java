@@ -81,7 +81,7 @@ public class AnalyzeAudio {
         log.info("Finished generating waveforms");
     }
 
-    @Scheduled(initialDelay = 3000, fixedRate = 15000)
+  //  @Scheduled(initialDelay = 3000, fixedRate = 15000)
     public void detectVoice()   {
         log.info("Detecting voices");
 
