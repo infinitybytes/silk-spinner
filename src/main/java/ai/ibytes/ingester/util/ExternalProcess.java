@@ -36,7 +36,7 @@ public class ExternalProcess {
             builder.command("cmd.exe", "/c", "unzip.bat", pathToFile.toString(), storageConfig.getTempLocation());
             builder.directory(new File(appConfig.getRootDir(), "bin"));
         } else {
-            builder.command("sh", "-c", "unzip -o", pathToFile.toString(), "-d", storageConfig.getTempLocation());
+            builder.command("sh", "-c", "jar xvf", pathToFile.toString());
         }
 
         // Kick off the process and monitor
