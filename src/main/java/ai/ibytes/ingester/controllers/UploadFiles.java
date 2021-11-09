@@ -33,6 +33,9 @@ public class UploadFiles {
 
     @Autowired
     private StorageConfig storageConfig;
+
+    @Autowired
+    private FileSystemStorageService fileSystemStorageService;
     
     @GetMapping(path="/upload.html")
     public ModelAndView getUploadPage(Principal user, Map<String, Object> model)   {
@@ -56,12 +59,15 @@ public class UploadFiles {
                 InputStream stream = item.openStream();
                 if(!item.isFormField()) {
                     log.info("Handling large ZIP upload: {}",item.getName());
-                    OutputStream os = new FileOutputStream(new File(storageConfig.getTempLocation(), item.getName()));
+                    OutputStream os = new FileOutputStream(new File(storageConfig.getZipLocation(), item.getName()));
                     IOUtils.copy(stream, os);
-                    log.info("Finished streaming ZIP to disk: {}/{}",storageConfig.getTempLocation(), item.getName());
+                    log.info("Finished streaming ZIP to disk: {}/{}",storageConfig.getZipLocation(), item.getName());
                     os.close();
 
                     msgs.add("Uploaded "+item.getName());
+
+                    // store as a ref pointer
+                    fileSystemStorageService.store(item.getName());
                 }
     
                 stream.close();

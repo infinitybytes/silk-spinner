@@ -3,12 +3,10 @@ package ai.ibytes.ingester.storage;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -18,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import ai.ibytes.ingester.config.StorageConfig;
 import ai.ibytes.ingester.model.FileUpload;
@@ -57,6 +54,23 @@ public class FileSystemStorageService {
 		return this.zipLocation;
 	}
 
+	public void store(String fileName)	{
+		// File is stored, create JSON record
+		String id = UUID.randomUUID().toString();
+		try {
+			FileUpload fileUpload = new FileUpload();
+			fileUpload.setId(id);
+			fileUpload.setFilename(fileName);
+			fileUpload.setStatus(FileUpload.STATUS.UPLOADED);
+			objectMapper.writeValue(
+				new File(this.rootLocation.toFile(), id + ".json"),
+				fileUpload		
+			);
+		} catch (IOException e) {
+			throw new StorageException("Failed to write meta file after file upload.",e);
+		}
+	}
+
 	public void store(File file) {		
 		if (!file.exists()) {
 			throw new StorageException("Failed to store non-existant file.");
@@ -93,64 +107,6 @@ public class FileSystemStorageService {
 		}
 		else {
 			throw new StorageException("Unsupported file type.");
-		}
-	}
-
-	public void store(MultipartFile file) {
-		try {
-			if (file.isEmpty()) {
-				throw new StorageException("Failed to store empty file.");
-			}
-
-			// Only allow ZIP or WAV
-			if(file.getOriginalFilename().toUpperCase().endsWith(".ZIP"))	{
-				// store ZIP in temp and let the task pick it up
-				Path destinationFile = this.tempLocation.resolve(
-					Paths.get(file.getOriginalFilename()))
-					.normalize().toAbsolutePath();
-				if (!destinationFile.getParent().equals(this.tempLocation.toAbsolutePath())) {
-					// This is a security check
-					throw new StorageException(
-							"Cannot store file outside current directory.");
-				}
-
-				// DO NOT COPY, try to use disk I/O as much as possible
-				file.transferTo(destinationFile);
-			}
-			else if(file.getOriginalFilename().toUpperCase().endsWith(".WAV")) {
-				Path destinationFile = this.rootLocation.resolve(
-					Paths.get(file.getOriginalFilename()))
-					.normalize().toAbsolutePath();
-				if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
-					// This is a security check
-					throw new StorageException(
-							"Cannot store file outside current directory.");
-				}
-
-				// DO NOT COPY, try to use disk I/O as much as possible
-				file.transferTo(destinationFile);
-
-				// File is stored, create JSON record
-				String id = UUID.randomUUID().toString();
-				try {
-					FileUpload fileUpload = new FileUpload();
-					fileUpload.setId(id);
-					fileUpload.setFilename(file.getOriginalFilename());
-					fileUpload.setStatus(FileUpload.STATUS.UPLOADED);
-					objectMapper.writeValue(
-						new File(this.rootLocation.toFile(), id + ".json"),
-						fileUpload		
-					);
-				} catch (IOException e) {
-					throw new StorageException("Failed to write meta file after file upload.",e);
-				}
-			}
-			else {
-				throw new StorageException("Unsupported file type.");
-			}
-		}
-		catch (IOException e) {
-			throw new StorageException("Failed to store file.", e);
 		}
 	}
 

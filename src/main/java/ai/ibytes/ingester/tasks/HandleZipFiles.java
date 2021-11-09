@@ -24,7 +24,7 @@ public class HandleZipFiles {
     @Autowired
     private ExternalProcess externalProcess;
 
-    @Scheduled(initialDelay = 1000, fixedRate = 1000)
+   // @Scheduled(initialDelay = 1000, fixedRate = 1000)
     public void checkForZips()  {
         log.info("Checking for zip uploads");
         storageService.loadZipFromTemp().forEach(zipFile -> {
@@ -39,7 +39,7 @@ public class HandleZipFiles {
         log.info("Done checking for zip uploads");
     }
 
-    @Scheduled(initialDelay = 1000, fixedRate = 1000)
+    //@Scheduled(initialDelay = 1000, fixedRate = 1000)
     public void checkForWavs()  {
         storageService.loadWavFromTemp().forEach(wavFile -> {
             log.info("FilePathing: {}",wavFile.toAbsolutePath());
