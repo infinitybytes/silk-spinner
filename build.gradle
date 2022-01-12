@@ -20,6 +20,8 @@ repositories {
 }
 
 dependencies {
+	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
+
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-mustache'  
 	implementation('org.springframework.boot:spring-boot-starter-web')  {
