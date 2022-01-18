@@ -1,9 +1,6 @@
 package ai.ibytes.ingester.controllers;
 
-import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,8 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import ai.ibytes.ingester.model.FileUpload;
+import ai.ibytes.ingester.config.StorageConfig;
 import ai.ibytes.ingester.storage.FileSystemStorageService;
+import ai.ibytes.ingester.util.FtpClient;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
@@ -24,23 +22,26 @@ public class Index {
     @Autowired
     private FileSystemStorageService storageService;
 
+    @Autowired
+    private FtpClient ftpClient;
+
+    @Autowired
+    private StorageConfig storageConfig;
+
     private ObjectMapper objectMapper = new ObjectMapper();
     
     @GetMapping( path = {"/", "/index.html"})
     public ModelAndView getIndexPage(Principal user, Map<String, Object> model)   {
-        // @todo centralize
         model.put("user",(user!=null) ? user.getName() : "ANON");
 
-        List<FileUpload> uploads = new ArrayList<>();
-        storageService.loadAll().forEach(file -> {
-            try {
-                FileUpload f = (FileUpload)objectMapper.readValue(file.toAbsolutePath().toFile(), FileUpload.class);
-                uploads.add(f);
-            } catch (IOException e) {
-                log.error("Unable to read file tree.", e);
-            }
-        });
-        model.put("uploads", uploads);
+        try {
+            ftpClient.connect();
+            model.put("ftpfiles", ftpClient.ls());
+            ftpClient.disconnect();
+        } catch (Exception e) {
+            log.error("Error listing remote dir",e);
+        }
+
         return new ModelAndView("index", model);
     }
 }

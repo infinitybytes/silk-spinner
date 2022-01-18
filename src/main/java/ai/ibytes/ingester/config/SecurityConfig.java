@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		try {
 			// load users from disk
-			SystemUser users[] = objectMapper.readValue(storageService.load("users.json").toFile(), SystemUser[].class);
+			SystemUser users[] = objectMapper.readValue(storageService.loadJson("users").toFile(), SystemUser[].class);
 
 			Arrays.asList(users).stream().forEach( user -> {
 				userList.add(

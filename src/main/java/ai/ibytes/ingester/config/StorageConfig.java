@@ -7,6 +7,7 @@ import lombok.Data;
 @ConfigurationProperties("storage")
 @Data
 public class StorageConfig {
+    private String ftpHost;
     private String dataFiles;
     private String analysisStore;
 }

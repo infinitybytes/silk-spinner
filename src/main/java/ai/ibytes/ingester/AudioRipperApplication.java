@@ -6,10 +6,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import ai.ibytes.ingester.config.AppConfig;
+import ai.ibytes.ingester.config.AuthConfig;
 import ai.ibytes.ingester.config.StorageConfig;
 
 @SpringBootApplication
-@EnableConfigurationProperties({StorageConfig.class, AppConfig.class})
+@EnableConfigurationProperties({StorageConfig.class, AppConfig.class, AuthConfig.class})
 @EnableScheduling
 public class AudioRipperApplication {
 
