@@ -4,9 +4,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import lombok.Data;
 
-@ConfigurationProperties("storage")
+@ConfigurationProperties("auth")
 @Data
-public class StorageConfig {
-    private String dataFiles;
-    private String analysisStore;
+public class AuthConfig {
+    private String username;
+    private String password;
 }

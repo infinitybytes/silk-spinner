@@ -28,7 +28,7 @@ public class UserStoreService {
         List<SystemUser> sysUsers = new ArrayList<>();
 
         log.info("Loading users from disk.");
-		SystemUser[] users = objectMapper.readValue(storageService.load("users.json").toFile(), SystemUser[].class);
+		SystemUser[] users = objectMapper.readValue(storageService.loadJson("users").toFile(), SystemUser[].class);
         for( SystemUser u : users )   {
             sysUsers.add(u);
         }
@@ -39,7 +39,7 @@ public class UserStoreService {
     public void saveUsers(List<SystemUser> users) throws JsonGenerationException, JsonMappingException, IOException {
         log.info("Saving users to disk.");
         objectMapper.writeValue(
-            new File(storageService.getRootLocation().toFile(), "users.json"),
+            new File(storageService.getAnalysisStorePath().toFile(), "users.json"),
 			users.toArray()
         );
     }

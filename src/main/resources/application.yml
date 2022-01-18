@@ -16,6 +16,5 @@ app:
   rootDir: /data/app
   
 storage:
-    diskLocation: /data/app/store
-    zipLocation: /data/app/zips
-    tempLocation: /data/app/temp
+  dataFiles: https://athome.routerlogin.net/shares/filepile/0_originals/audiomoth/
+  analysisStore: /data/app/store

@@ -26,29 +26,8 @@ public class ExternalProcess {
     @Autowired
     private StorageConfig storageConfig;
 
-    public void unzip(String filename) throws IOException, InterruptedException   {
-        Path pathToFile = (isWindows) ? Path.of("C:\\", storageConfig.getTempLocation(), filename) : Path.of(storageConfig.getTempLocation(), filename);
-
-        log.info("Running external unzip process on {}",pathToFile.toString());
-
-        ProcessBuilder builder = new ProcessBuilder().inheritIO();
-        if (isWindows) {
-            builder.command("cmd.exe", "/c", "unzip.bat", pathToFile.toString(), storageConfig.getTempLocation());
-            builder.directory(new File(appConfig.getRootDir(), "bin"));
-        } else {
-            builder.command("sh", "-c", "jar xvf", pathToFile.toString());
-        }
-
-        // Kick off the process and monitor
-        Process process = builder.start();
-
-        // Clean exit?
-        int exitCode = process.waitFor();
-        assert exitCode == 0;
-    }
-
     public void convertBitrate(String filename) throws IOException, InterruptedException   {
-        Path pathToFile = (isWindows) ? Path.of("C:\\", storageConfig.getDiskLocation(), filename) : Path.of(storageConfig.getDiskLocation(), filename);
+        Path pathToFile = (isWindows) ? Path.of("C:\\", storageConfig.getDataFiles(), filename) : Path.of(storageConfig.getDataFiles(), filename);
 
         log.info("Running external conversion process on {}",pathToFile.toString());
 
@@ -69,7 +48,7 @@ public class ExternalProcess {
     }
 
     public void generateWaveform(String filename) throws IOException, InterruptedException   {
-        Path pathToFile = (isWindows) ? Path.of("C:\\", storageConfig.getDiskLocation(), filename) : Path.of(storageConfig.getDiskLocation(), filename);
+        Path pathToFile = (isWindows) ? Path.of("C:\\", storageConfig.getDataFiles(), filename) : Path.of(storageConfig.getDataFiles(), filename);
 
         log.info("Running external waveform process on {}",pathToFile.toString());
 
