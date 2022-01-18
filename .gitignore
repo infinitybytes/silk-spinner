@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+## exclude future commits ##
+src/main/resources/application.yml
