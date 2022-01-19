@@ -26,7 +26,8 @@
           <table id="ftpfiles" class="table display">
             <thead>
               <tr>
-                <th>File</th>
+                <th>Folder/File</th>
+                <th>Status</th>
                 <th></th>
               </tr>
             </thead>
@@ -34,11 +35,15 @@
             {{#datafiles}}
               <tr>
                 <td>
-                  <a href="/index.html?id=/{{slug}}/{{name}}">{{name}}</a><br />
+                  <a href="/index.html?id={{slug}}/{{name}}">{{name}}</a><br />
                 </td>  
                 <td>
+                  {{status}}
+                </td>
+                <td>
                   <div class="btn-group" role="group" aria-label="Actions">
-                    
+                    <a class="btn btn-success" href="/analysis.html?id={{slug}}/{{name}}">Analyze</a>
+                    <a class="btn btn-primary" href="/export.html?id={{slug}}/{{name}}">Export CSV</a>
                   </div>
                 </td>
               </tr>

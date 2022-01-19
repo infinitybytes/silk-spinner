@@ -28,6 +28,7 @@ public class FileSystemStorageService {
 
 	private final Path dataFiles;
 	private final Path analysisStore;
+	private final Path tempStore;
 
 	private final ObjectMapper objectMapper;
 
@@ -35,6 +36,7 @@ public class FileSystemStorageService {
 	public FileSystemStorageService(StorageConfig properties) {
 		this.dataFiles = Paths.get(properties.getDataFiles());
 		this.analysisStore = Paths.get(properties.getAnalysisStore());
+		this.tempStore = Paths.get(properties.getTempStore());
 
 		objectMapper = new ObjectMapper();
 	}
@@ -47,20 +49,30 @@ public class FileSystemStorageService {
 		return this.analysisStore;
 	}
 
+	public Path getTempStorePath()	{
+		return this.tempStore;
+	}
+
 	public void store(String fileName)	{
 		// File is stored, create JSON record
-		String id = UUID.randomUUID().toString();
 		try {
 			FileUpload fileUpload = new FileUpload();
-			fileUpload.setId(id);
 			fileUpload.setFilename(fileName);
 			fileUpload.setStatus(FileUpload.STATUS.UPLOADED);
 			objectMapper.writeValue(
-				new File(this.analysisStore.toFile(), id + ".json"),
+				new File(this.analysisStore.toFile(), fileName + ".json"),
 				fileUpload		
 			);
 		} catch (IOException e) {
 			throw new StorageException("Failed to write meta file after file upload.",e);
+		}
+	}
+
+	public void save(FileUpload file)	{
+		try {
+			objectMapper.writeValue(loadJson(file.getFilename()).toFile(), file);
+		} catch (IOException e) {
+			throw new StorageException("Failed to save meta file",e);
 		}
 	}
 
@@ -88,7 +100,7 @@ public class FileSystemStorageService {
 
 	public Resource loadAsResource(String filename) {
 		try {
-			Path file = load(filename);
+			Path file = tempStore.resolve(filename);
 			Resource resource = new UrlResource(file.toUri());
 			if (resource.exists() || resource.isReadable()) {
 				return resource;

@@ -27,7 +27,7 @@ public class ExternalProcess {
     private StorageConfig storageConfig;
 
     public void convertBitrate(String filename) throws IOException, InterruptedException   {
-        Path pathToFile = (isWindows) ? Path.of("C:\\", storageConfig.getDataFiles(), filename) : Path.of(storageConfig.getDataFiles(), filename);
+        Path pathToFile = (isWindows) ? Path.of("C:\\", storageConfig.getTempStore(), filename) : Path.of(storageConfig.getTempStore(), filename);
 
         log.info("Running external conversion process on {}",pathToFile.toString());
 
@@ -48,7 +48,7 @@ public class ExternalProcess {
     }
 
     public void generateWaveform(String filename) throws IOException, InterruptedException   {
-        Path pathToFile = (isWindows) ? Path.of("C:\\", storageConfig.getDataFiles(), filename) : Path.of(storageConfig.getDataFiles(), filename);
+        Path pathToFile = (isWindows) ? Path.of("C:\\", storageConfig.getTempStore(), filename) : Path.of(storageConfig.getTempStore(), filename);
 
         log.info("Running external waveform process on {}",pathToFile.toString());
 

@@ -10,4 +10,5 @@ public class StorageConfig {
     private String ftpHost;
     private String dataFiles;
     private String analysisStore;
+    private String tempStore;
 }

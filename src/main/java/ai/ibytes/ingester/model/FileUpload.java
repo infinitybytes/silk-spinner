@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 public class FileUpload {
     public enum STATUS {UPLOADED, CONVERTED, NEEDS_VAD, ANALYZED, ARCHIVED}
 
-    private String id;
     private String originalPath;
     private String filename;
     private FileUpload.STATUS status;
