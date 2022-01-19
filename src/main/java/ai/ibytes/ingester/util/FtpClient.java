@@ -10,7 +10,6 @@ import ai.ibytes.ingester.model.DataFile;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -86,10 +85,8 @@ public class FtpClient {
     }
 
     public void getRemote(DataFile file, File tempLocation) throws IOException   {
-        tempLocation.createNewFile();
-
         FileOutputStream local = new FileOutputStream(tempLocation);
-        boolean downloaded = ftp.retrieveFile(storageConfig.getDataFiles() + UriEncoder.decode(file.getSlug()) + '/' + file.getName(), local);
+        boolean downloaded = ftp.retrieveFile(storageConfig.getDataFiles() + file.getSlug() + '/' + file.getName(), local);
         local.flush();
         local.close();
 

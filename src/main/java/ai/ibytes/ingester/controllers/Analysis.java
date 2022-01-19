@@ -1,7 +1,6 @@
 package ai.ibytes.ingester.controllers;
 
 import java.io.File;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -48,9 +47,9 @@ public class Analysis {
             List<DataFile> datafiles = ftpClient.ls(id.get());
             
             // Submit the analyzer to a threadpool
-            datafiles.stream().forEach(file -> {
+            datafiles.parallelStream().forEach(file -> {
                 // skip goback
-                if(!file.getName().endsWith("Go Back")) {
+                if(!file.getName().endsWith(".")) {
                     // download file to temp
                     try {
                         // create json data file locally

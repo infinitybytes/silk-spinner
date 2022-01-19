@@ -13,7 +13,6 @@ import ai.ibytes.ingester.model.DataFile;
 import ai.ibytes.ingester.model.FileUpload;
 import ai.ibytes.ingester.storage.FileSystemStorageService;
 import ai.ibytes.ingester.util.ExternalProcess;
-import ai.ibytes.ingester.util.FtpClient;
 import ai.ibytes.ingester.vad.SphinxVoiceDetection;
 import lombok.extern.slf4j.Slf4j;
 
@@ -114,15 +113,18 @@ public class AnalyzeAudio implements Runnable {
     @Override
     public void run() {
         // Run converter, waveform, VAD
+        log.info("{} : converting audio rate", this.dataFile.getLocalTempFile().toAbsolutePath());
        // convertAudioRate();
+       log.info("{} : generating waveform", this.dataFile.getLocalTempFile().toAbsolutePath());
        // generateWaveform();
+       log.info("{} : detecting voice", this.dataFile.getLocalTempFile().toAbsolutePath());
        // detectVoice();
 
         // Finished, delete temp local file
-        // try {
-        //     Files.deleteIfExists(dataFile.getLocalTempFile());
-        // } catch (IOException e) {
-        //     log.error("Unable to delete temp local file",e);
-        // }
+        try {
+            Files.deleteIfExists(dataFile.getLocalTempFile());
+        } catch (IOException e) {
+            log.error("Unable to delete temp local file",e);
+        }
     }
 }

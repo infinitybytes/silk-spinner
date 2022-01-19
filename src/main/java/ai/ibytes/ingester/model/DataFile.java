@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.net.ftp.FTPFile;
-import org.yaml.snakeyaml.util.UriEncoder;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,7 +25,7 @@ public class DataFile {
     private List<String> voiceDetectTimes = new ArrayList<>();
 
     public String getSlug() {
-        return UriEncoder.encode(this.slug);
+        return this.slug;
     }
 
     public String getName() {
