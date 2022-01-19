@@ -19,7 +19,7 @@
       {{>layout/navbar}}
 
       <div class="mb-3">
-        Files Uploaded
+        Data Files
       </div>
       <div class="mb-3">
         <div class="table-responsive">
@@ -31,10 +31,10 @@
               </tr>
             </thead>
             <tbody>
-            {{#ftpfiles}}
+            {{#datafiles}}
               <tr>
                 <td>
-                  <a href="/index.html?id=/{{name}}">{{name}}</a><br />
+                  <a href="/index.html?id=/{{slug}}/{{name}}">{{name}}</a><br />
                 </td>  
                 <td>
                   <div class="btn-group" role="group" aria-label="Actions">
@@ -42,7 +42,7 @@
                   </div>
                 </td>
               </tr>
-            {{/ftpfiles}}
+            {{/datafiles}}
             </tbody>
           </table>
         </div>

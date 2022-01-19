@@ -5,11 +5,13 @@ import org.springframework.stereotype.Service;
 
 import ai.ibytes.ingester.config.AuthConfig;
 import ai.ibytes.ingester.config.StorageConfig;
+import ai.ibytes.ingester.model.DataFile;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -55,11 +57,17 @@ public class FtpClient {
      * @return
      * @throws IOException
      */
-    public List<FTPFile> ls(String dirName) throws IOException {
-        return Arrays.asList(ftp.listFiles(storageConfig.getDataFiles() + dirName));
+    public List<DataFile> ls(String dirName) throws IOException {
+        List<FTPFile> files = Arrays.asList(ftp.listFiles(storageConfig.getDataFiles() + dirName));
+        List<DataFile> dataFiles = new ArrayList<>();
+        files.stream().forEach(file -> {
+            DataFile df = new DataFile(file, dirName);
+            dataFiles.add(df);
+        });
+        return dataFiles;
     }
 
-    public List<FTPFile> ls() throws IOException   {
+    public List<DataFile> ls() throws IOException   {
         return ls("/");
     }
 

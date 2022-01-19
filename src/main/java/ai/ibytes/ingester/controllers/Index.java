@@ -38,7 +38,7 @@ public class Index {
 
         try {
             ftpClient.connect();
-            model.put("ftpfiles", (id.isPresent()) ? ftpClient.ls(id.get()) : ftpClient.ls());
+            model.put("datafiles", (id.isPresent()) ? ftpClient.ls(id.get()) : ftpClient.ls());
             ftpClient.disconnect();
         } catch (Exception e) {
             log.error("Error listing remote dir",e);
