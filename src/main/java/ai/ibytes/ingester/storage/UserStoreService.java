@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ai.ibytes.ingester.config.AppConfig;
 import ai.ibytes.ingester.model.SystemUser;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserStoreService {
     @Autowired
-    private FileSystemStorageService storageService;
+    private AppConfig appConfig;
 
 	private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -28,7 +29,7 @@ public class UserStoreService {
         List<SystemUser> sysUsers = new ArrayList<>();
 
         log.info("Loading users from disk.");
-		SystemUser[] users = objectMapper.readValue(storageService.loadJson("users").toFile(), SystemUser[].class);
+		SystemUser[] users = objectMapper.readValue(new File(appConfig.getRootDir(), "users.json"), SystemUser[].class);
         for( SystemUser u : users )   {
             sysUsers.add(u);
         }
@@ -39,7 +40,7 @@ public class UserStoreService {
     public void saveUsers(List<SystemUser> users) throws JsonGenerationException, JsonMappingException, IOException {
         log.info("Saving users to disk.");
         objectMapper.writeValue(
-            new File(storageService.getAnalysisStorePath().toFile(), "users.json"),
+            new File(appConfig.getRootDir(), "users.json"),
 			users.toArray()
         );
     }

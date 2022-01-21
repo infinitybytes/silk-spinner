@@ -25,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class FileSystemStorageService {
-
 	private final Path dataFiles;
 	private final Path analysisStore;
 	private final Path tempStore;

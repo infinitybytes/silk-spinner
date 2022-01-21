@@ -9,10 +9,10 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
-import ai.ibytes.ingester.storage.FileSystemStorageService;
 import ai.ibytes.ingester.model.SystemUser;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
-    private FileSystemStorageService storageService;
+    private AppConfig appConfig;
 
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		try {
 			// load users from disk
-			SystemUser users[] = objectMapper.readValue(storageService.loadJson("users").toFile(), SystemUser[].class);
+			SystemUser users[] = objectMapper.readValue(new File(appConfig.getRootDir(), "users.json"), SystemUser[].class);
 
 			Arrays.asList(users).stream().forEach( user -> {
 				userList.add(

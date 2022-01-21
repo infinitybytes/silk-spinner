@@ -36,7 +36,7 @@ public class Analysis {
     @Autowired
     private AnalyzeAudio analyzeAudio;
     
-    private ThreadPoolExecutor poolExecutor = (ThreadPoolExecutor)Executors.newFixedThreadPool(12);
+    private ThreadPoolExecutor poolExecutor = (ThreadPoolExecutor)Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     @GetMapping( path = "/analysis.html")
     public ModelAndView getIndexPage(Principal user, Map<String, Object> model, @RequestParam("id") Optional<String> id)   {
