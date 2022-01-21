@@ -2,7 +2,6 @@ package ai.ibytes.ingester.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.yaml.snakeyaml.util.UriEncoder;
 
 import ai.ibytes.ingester.config.AuthConfig;
 import ai.ibytes.ingester.config.StorageConfig;

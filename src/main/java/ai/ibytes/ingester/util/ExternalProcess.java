@@ -1,5 +1,7 @@
 package ai.ibytes.ingester.util;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -26,7 +28,7 @@ public class ExternalProcess {
     @Autowired
     private StorageConfig storageConfig;
 
-    public void convertBitrate(String filename) throws IOException, InterruptedException   {
+    public int convertBitrate(String filename) throws IOException, InterruptedException   {
         Path pathToFile = (isWindows) ? Path.of("C:\\", storageConfig.getTempStore(), filename) : Path.of(storageConfig.getTempStore(), filename);
 
         log.info("Running external conversion process on {}",pathToFile.toString());
@@ -41,13 +43,14 @@ public class ExternalProcess {
 
         // Kick off the process and monitor
         Process process = builder.start();
+        BufferedOutputStream br = new BufferedOutputStream(process.getOutputStream());
+        log.info(br.toString());  
 
         // Clean exit?
-        int exitCode = process.waitFor();
-        assert exitCode == 0;
+        return process.waitFor();
     }
 
-    public void generateWaveform(String filename) throws IOException, InterruptedException   {
+    public int generateWaveform(String filename) throws IOException, InterruptedException   {
         Path pathToFile = (isWindows) ? Path.of("C:\\", storageConfig.getTempStore(), filename) : Path.of(storageConfig.getTempStore(), filename);
 
         log.info("Running external waveform process on {}",pathToFile.toString());
@@ -62,9 +65,10 @@ public class ExternalProcess {
 
         // Kick off the process and monitor
         Process process = builder.start();
+        BufferedOutputStream br = new BufferedOutputStream(process.getOutputStream());
+        log.info(br.toString());  
 
         // Clean exit?
-        int exitCode = process.waitFor();
-        assert exitCode == 0;
+        return process.waitFor();
     }
 }
