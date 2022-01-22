@@ -35,19 +35,16 @@ public class Analysis {
 
     @Autowired
     private AnalyzeAudio analyzeAudio;
-    
-    private ThreadPoolExecutor poolExecutor = (ThreadPoolExecutor)Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     @GetMapping( path = "/analysis.html")
     public ModelAndView getIndexPage(Principal user, Map<String, Object> model, @RequestParam("id") Optional<String> id)   {
         model.put("user",(user!=null) ? user.getName() : "ANON");
 
         try {
-            ftpClient.connect();
             List<DataFile> datafiles = ftpClient.ls(id.get());
-            
+
             // Submit the analyzer to a threadpool
-            datafiles.parallelStream().forEach(file -> {
+            datafiles.stream().forEach(file -> {
                 // skip goback
                 if(!file.getName().endsWith(".")) {
                     // download file to temp
@@ -64,14 +61,12 @@ public class Analysis {
                         analyzeAudio.setDataFile(file);
 
                         // submit to threadpool
-                        poolExecutor.submit(analyzeAudio);
+                        log.info("About to work on {}", file.toString());
                     } catch (Exception e) {
                         log.error("Unable to get remote file: {}",file.getRawFile(),e);
                     }
                 }
             });
-
-            ftpClient.disconnect();
         } catch (Exception e) {
             log.error("Error listing remote dir",e);
         }

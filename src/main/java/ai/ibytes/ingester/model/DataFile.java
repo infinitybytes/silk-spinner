@@ -9,9 +9,11 @@ import org.apache.commons.net.ftp.FTPFile;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Data
 public class DataFile {
     public enum STATUS {UPLOADED, CONVERTED, NEEDS_VAD, ANALYZED, ARCHIVED}

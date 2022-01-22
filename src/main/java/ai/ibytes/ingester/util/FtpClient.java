@@ -34,14 +34,14 @@ public class FtpClient {
     @Autowired
     private StorageConfig storageConfig;
 
-    private static FTPClient ftp = new FTPClient();
+    private FTPClient ftp = new FTPClient();
 
     /**
      * 
      * @throws SocketException
      * @throws IOException
      */
-    public void connect() throws SocketException, IOException   {
+    private void connect() throws SocketException, IOException   {
         ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
         
         ftp.connect(storageConfig.getFtpHost(), 21);
@@ -66,6 +66,7 @@ public class FtpClient {
      * @throws IOException
      */
     public List<DataFile> ls(String dirName) throws IOException {
+        this.connect();
         List<FTPFile> files = Arrays.asList(ftp.listFiles(storageConfig.getDataFiles() + dirName));
         List<DataFile> dataFiles = new ArrayList<>();
         files.stream().forEach(file -> {
@@ -76,6 +77,8 @@ public class FtpClient {
                 dataFiles.add(df);
             }
         });
+        this.disconnect();
+
         return dataFiles;
     }
 
@@ -84,11 +87,14 @@ public class FtpClient {
     }
 
     public void getRemote(DataFile file, File tempLocation) throws IOException   {
+        this.connect();
+
         FileOutputStream local = new FileOutputStream(tempLocation);
         boolean downloaded = ftp.retrieveFile(storageConfig.getDataFiles() + file.getSlug() + '/' + file.getName(), local);
         local.flush();
         local.close();
-
+        this.disconnect();
+        
         if(!downloaded) {
             log.error("Error downloading data file: {}", file);
             throw new IOException("Error downloading data file");
@@ -99,7 +105,7 @@ public class FtpClient {
      * 
      * @throws IOException
      */
-    public void disconnect() throws IOException    {
+    private void disconnect() throws IOException    {
         ftp.logout();
         ftp.disconnect();
     }
