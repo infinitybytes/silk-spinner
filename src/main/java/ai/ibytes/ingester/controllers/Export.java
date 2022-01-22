@@ -66,38 +66,4 @@ public class Export {
            log.error("Error creating SITE CSV",e);
         }
     }
-
-    @GetMapping("/export.html")
-    public void getCsv(Principal user, @RequestParam("id") String id, HttpServletResponse response)   {
-        log.info("Exporting to CSV ID {}", id);
-        FileUpload fileJson = new FileUpload();
-
-        try {
-            fileJson = objectMapper.readValue(storageService.loadJson(id).toFile(), FileUpload.class);
-        } catch (IOException e) {
-            log.error("Unable to load the JSON for ID {}",id);
-        }
-
-        response.setContentType("text/csv");
-        response.setHeader("Content-Disposition", "attachment; filename="+fileJson.getFilename().replace(" ", "_")+".csv");
-        
-        CsvMapper csvMapper = new CsvMapper();
-        Builder csvSchemaBuilder = CsvSchema.builder();
-        CsvSchema schema = csvSchemaBuilder
-            .addColumn("originalPath")
-            .addColumn("filename")
-            .addColumn("status")
-            .addColumn("waveform", ColumnType.BOOLEAN)
-            .addColumn("voiceDetected", ColumnType.BOOLEAN)
-            .addColumn("voiceDetectTimes").build().withHeader();
-        
-        try {
-            csvMapper
-                .writerFor(FileUpload.class)
-                .with(schema)
-                .writeValue(response.getWriter(), fileJson);
-        } catch (IOException e) {
-           log.error("Error creating CSV",e);
-        }
-    }
 }

@@ -19,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 import ai.ibytes.ingester.config.StorageConfig;
 import ai.ibytes.ingester.model.FileUpload;
 import ai.ibytes.ingester.storage.FileSystemStorageService;
+import ai.ibytes.ingester.storage.exceptions.StorageException;
 import ai.ibytes.ingester.util.FtpClient;
 import lombok.extern.slf4j.Slf4j;
 
@@ -71,14 +72,19 @@ public class Index {
         model.put("user",(user!=null) ? user.getName() : "ANON");
 
         List<FileUpload> uploads = new ArrayList<>();
-        storageService.loadAll(id.get()).forEach(file -> {
-            try {
-                FileUpload f = (FileUpload)objectMapper.readValue(file.toAbsolutePath().toFile(), FileUpload.class);
-                uploads.add(f);
-            } catch (IOException e) {
-                log.error("Unable to read file tree.", e);
-            }
-        });
+        try {
+            storageService.loadAll(id.get()).forEach(file -> {
+                try {
+                    FileUpload f = (FileUpload)objectMapper.readValue(file.toAbsolutePath().toFile(), FileUpload.class);
+                    uploads.add(f);
+                } catch (IOException e) {
+                    log.error("Unable to read file tree.", e);
+                }
+            });
+        } catch(StorageException e)  {
+            log.error("Unable to read datafiles for {}",id.get(), e);
+        }
+        
         model.put("uploads", uploads);
 
         return new ModelAndView("datafiles", model);

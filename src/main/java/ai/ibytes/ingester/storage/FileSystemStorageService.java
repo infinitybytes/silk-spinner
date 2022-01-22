@@ -77,7 +77,7 @@ public class FileSystemStorageService {
 
 	public void save(FileUpload file)	{
 		try {
-			objectMapper.writeValue(loadJson(file.getFilename()).toFile(), file);
+			objectMapper.writeValue(loadJson(file.getOriginalPath(), file.getFilename()).toFile(), file);
 		} catch (IOException e) {
 			throw new StorageException("Failed to save meta file",e);
 		}
@@ -103,8 +103,9 @@ public class FileSystemStorageService {
 		return dataFiles.resolve(filename);
 	}
 
-	public Path loadJson(String id)	{
-		return analysisStore.resolve(id + ".json");
+	public Path loadJson(String dirName, String fileName)	{
+		Path sitePath = Paths.get(dirName, fileName + ".json");
+		return analysisStore.resolve(sitePath);
 	}
 
 	public Resource loadAsResource(String filename) {

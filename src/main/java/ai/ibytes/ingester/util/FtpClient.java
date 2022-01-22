@@ -42,7 +42,6 @@ public class FtpClient {
      */
     public void connect()  {
         ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
-        ftp.setDataTimeout(30_000);
     
         try {
             ftp.connect(storageConfig.getFtpHost(), 21);
@@ -53,8 +52,7 @@ public class FtpClient {
                 log.error("Unable to login to FTP: {}", ftp.getReplyString());
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Error trying to connect",e);
         }
     }
 
@@ -69,8 +67,7 @@ public class FtpClient {
         try {
             files = Arrays.asList(ftp.listFiles(storageConfig.getDataFiles() + dirName));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+           log.error("Error trying to list files @ {}",dirName, e);
         }
 
         return files;
@@ -82,43 +79,17 @@ public class FtpClient {
 
     public void getRemote(String file, File tempLocation)    {
         try (FileOutputStream local = new FileOutputStream(tempLocation)) {
-            ftp.enterLocalPassiveMode();
             boolean downloaded = ftp.retrieveFile(storageConfig.getDataFiles() + file, local);
-            ftp.enterLocalActiveMode();
 
             if(!downloaded) {
                 log.error("Error downloading data file: {}", file);
             }
         } catch(CopyStreamException e)  {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("CopyStream error downloading {}",file, e);
         } catch (FTPConnectionClosedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("FTPConnection closed unexpectedly",e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    public void getRemote(DataFile file, File tempLocation)    {
-        try (FileOutputStream local = new FileOutputStream(tempLocation)) {
-            ftp.enterLocalPassiveMode();
-            boolean downloaded = ftp.retrieveFile(storageConfig.getDataFiles() + file.getSlug() + '/' + file.getName(), local);
-            ftp.enterLocalActiveMode();
-
-            if(!downloaded) {
-                log.error("Error downloading data file: {}", file);
-            }
-        } catch(CopyStreamException e)  {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (FTPConnectionClosedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("IOException",e);
         }
     }
 
@@ -128,11 +99,9 @@ public class FtpClient {
      */
     public void disconnect()    {
         try {
-            ftp.logout();
             ftp.disconnect();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Error trying to disconnect",e);
         }
     }
 }

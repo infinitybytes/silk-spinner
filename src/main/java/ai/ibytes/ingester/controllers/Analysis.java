@@ -41,50 +41,39 @@ public class Analysis {
     public ModelAndView getIndexPage(Principal user, Map<String, Object> model, @RequestParam("id") Optional<String> id) throws IOException   {
         model.put("user",(user!=null) ? user.getName() : "ANON");
 
-        if(id.get().endsWith(".WAV"))   {
-            // single
-            File localFile = new File(storageConfig.getTempStore(), id.get().substring(id.get().lastIndexOf("/")));
-            if(!localFile.exists())  {
-                ftpClient.connect();
-                ftpClient.getRemote(id.get(), localFile);
-                ftpClient.disconnect();
+        ftpClient.connect();
+        try {
+            List<FTPFile> datafiles = ftpClient.ls(id.get());
 
-                // submit to the analyzer
-                DataFile file = new DataFile();
-                file.setName(localFile.getName());
-                file.setLocalTempFile(localFile.toPath());
-                analyzeAudio.setDataFile(file);
+            // Submit the analyzer to a threadpool
+            datafiles.stream().forEach(file -> {
+                // skip goback
+                if(!file.getName().endsWith(".")) {
+                    // recurse
+                    File localFile = new File(storageConfig.getTempStore(), file.getName());
+                    if(!localFile.exists())  {
+                        ftpClient.getRemote(id.get() + '/' + file.getName(), localFile);
 
-                // create json data file locally
-                storageService.store(id.get(), file.getName());
+                        // submit to the analyzer
+                        DataFile df = new DataFile();
+                        df.setDirName(id.get());
+                        df.setName(localFile.getName());
+                        df.setLocalTempFile(localFile.toPath());
 
-                // send to analyzer
-                analyzeAudio.run();
-            }
-        }
-        else    {
-            try {
-                ftpClient.connect();
-                List<FTPFile> datafiles = ftpClient.ls(id.get());
-                ftpClient.disconnect();
+                        analyzeAudio.setDataFile(df);
 
-                // Submit the analyzer to a threadpool
-                datafiles.stream().forEach(file -> {
-                    // skip goback
-                    if(!file.getName().endsWith(".")) {
-                        // recurse
-                        try {
-                            getIndexPage(user, model, Optional.of(id.get() + '/' + file.getName()));
-                        } catch (IOException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
+                        // create json data file locally
+                        storageService.store(id.get(),file.getName());
+
+                        // send to analyzer
+                        analyzeAudio.run();
                     }
-                });
-            } catch (Exception e) {
-                log.error("Error listing remote dir",e);
-            } 
-        }
+                }
+            });
+        } catch (Exception e) {
+            log.error("Error listing remote dir",e);
+        } 
+        ftpClient.disconnect();
 
         return new ModelAndView("index", model);
     }

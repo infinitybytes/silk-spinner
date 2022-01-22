@@ -37,11 +37,7 @@ public class FileViewer {
         log.info("Retrieving file ID {}", id);
         FileUpload fileJson = new FileUpload();
 
-        try {
-            fileJson = objectMapper.readValue(storageService.loadJson(id).toFile(), FileUpload.class);
-        } catch (IOException e) {
-            log.error("Unable to load the JSON for ID {}",id);
-        }
+        
 
         // Map
         model.put("json", fileJson);
@@ -54,12 +50,7 @@ public class FileViewer {
         log.info("Retrieving filebytes ID {}", id);
         FileUpload fileJson = new FileUpload();
 
-        try {
-            fileJson = objectMapper.readValue(storageService.loadJson(id).toFile(), FileUpload.class);
-        } catch (IOException e) {
-            log.error("Unable to load the JSON for ID {}",id);
-        }
-
+        
         // Load the actual file
         Resource videoFile = storageService.loadAsResource(fileJson.getFilename());
 
@@ -79,11 +70,7 @@ public class FileViewer {
         log.info("Retrieving waveform for ID {}", id);
         FileUpload fileJson = new FileUpload();
 
-        try {
-            fileJson = objectMapper.readValue(storageService.loadJson(id).toFile(), FileUpload.class);
-        } catch (IOException e) {
-            log.error("Unable to load the JSON for ID {}",id);
-        }
+        
 
         // Load the actual file
         Resource waveFormPic = storageService.loadAsResource(fileJson.getFilename() + ".png");

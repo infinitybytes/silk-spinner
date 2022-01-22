@@ -45,7 +45,7 @@ public class AnalyzeAudio implements Runnable {
         log.info("Converting sample rates and channel");
         
         try {
-            FileUpload f = (FileUpload)objectMapper.readValue(storageService.loadJson(dataFile.getName()).toFile(), FileUpload.class);
+            FileUpload f = (FileUpload)objectMapper.readValue(storageService.loadJson(dataFile.getDirName(),dataFile.getName()).toFile(), FileUpload.class);
 
             if(f.getStatus().equals(FileUpload.STATUS.UPLOADED))   {
                 log.info( "{} needs a waveform, generating", f.getFilename());
@@ -56,7 +56,7 @@ public class AnalyzeAudio implements Runnable {
             }
 
         } catch (IOException | InterruptedException e) {
-            log.error("Unable to convert bitrate for {}", dataFile.getLocalTempFile().toAbsolutePath());
+            log.error("Unable to convert bitrate for {}", dataFile.getName(),e);
         }
         
         log.info("Finished converting bitrate");
@@ -66,7 +66,7 @@ public class AnalyzeAudio implements Runnable {
         log.info("Generating waveforms");
 
         try {
-            FileUpload f = (FileUpload)objectMapper.readValue(storageService.loadJson(dataFile.getName()).toFile(), FileUpload.class);
+            FileUpload f = (FileUpload)objectMapper.readValue(storageService.loadJson(dataFile.getDirName(),dataFile.getName()).toFile(), FileUpload.class);
 
             if(f.getStatus().equals(FileUpload.STATUS.CONVERTED))   {
                 log.info( "{} needs a waveform, generating", f.getFilename());
@@ -78,7 +78,7 @@ public class AnalyzeAudio implements Runnable {
             }
 
         } catch (IOException | InterruptedException e) {
-            log.error("Unable to generate waveform for {}", dataFile.getName());
+            log.error("Unable to generate waveform for {}", dataFile.getName(),e);
         }
 
         log.info("Finished generating waveforms");
@@ -88,7 +88,7 @@ public class AnalyzeAudio implements Runnable {
         log.info("Detecting voices");
 
         try {
-            FileUpload f = (FileUpload)objectMapper.readValue(storageService.loadJson(dataFile.getName()).toFile(), FileUpload.class);
+            FileUpload f = (FileUpload)objectMapper.readValue(storageService.loadJson(dataFile.getDirName(),dataFile.getName()).toFile(), FileUpload.class);
 
             if(f.getStatus().equals(FileUpload.STATUS.NEEDS_VAD))   {
                 log.info( "{} needs VAD, generating", f.getFilename());
@@ -104,7 +104,7 @@ public class AnalyzeAudio implements Runnable {
             }
 
         } catch (IOException e) {
-            log.error("Unable to detect voice for {}", dataFile.getName());
+            log.error("Unable to detect voice for {}", dataFile.getName(),e);
         }
 
         log.info("Finished detecting voice");
@@ -114,10 +114,13 @@ public class AnalyzeAudio implements Runnable {
     public void run() {
         // Run converter, waveform, VAD
         log.info("{} : converting audio rate", this.dataFile.getLocalTempFile().toAbsolutePath());
+        log.debug(this.dataFile.toString());
         convertAudioRate();
         log.info("{} : generating waveform", this.dataFile.getLocalTempFile().toAbsolutePath());
+        log.debug(this.dataFile.toString());
         generateWaveform();
         log.info("{} : detecting voice", this.dataFile.getLocalTempFile().toAbsolutePath());
+        log.debug(this.dataFile.toString());
         detectVoice();
 
         // Finished, delete temp local file
