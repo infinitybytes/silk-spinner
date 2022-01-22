@@ -56,7 +56,7 @@ public class Analysis {
                 analyzeAudio.setDataFile(file);
 
                 // create json data file locally
-                storageService.store(file.getName());
+                storageService.store(id.get(), file.getName());
 
                 // send to analyzer
                 analyzeAudio.run();

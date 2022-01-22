@@ -71,7 +71,7 @@ public class Index {
         model.put("user",(user!=null) ? user.getName() : "ANON");
 
         List<FileUpload> uploads = new ArrayList<>();
-        storageService.loadAll().forEach(file -> {
+        storageService.loadAll(id.get()).forEach(file -> {
             try {
                 FileUpload f = (FileUpload)objectMapper.readValue(file.toAbsolutePath().toFile(), FileUpload.class);
                 uploads.add(f);

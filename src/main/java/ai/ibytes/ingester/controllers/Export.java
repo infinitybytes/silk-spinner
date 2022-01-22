@@ -35,7 +35,7 @@ public class Export {
         log.info("Exporting to CSV SITE ID {}", id);
         
         List<FileUpload> fileUploads = new ArrayList<>();
-        storageService.loadAll().forEach(file -> {
+        storageService.loadAll(id).forEach(file -> {
             try {
                 FileUpload f = (FileUpload)objectMapper.readValue(file.toAbsolutePath().toFile(), FileUpload.class);
                 fileUploads.add(f);
@@ -50,7 +50,6 @@ public class Export {
         CsvMapper csvMapper = new CsvMapper();
         Builder csvSchemaBuilder = CsvSchema.builder();
         CsvSchema schema = csvSchemaBuilder
-            .addColumn("id")
             .addColumn("originalPath")
             .addColumn("filename")
             .addColumn("status")
@@ -85,7 +84,6 @@ public class Export {
         CsvMapper csvMapper = new CsvMapper();
         Builder csvSchemaBuilder = CsvSchema.builder();
         CsvSchema schema = csvSchemaBuilder
-            .addColumn("id")
             .addColumn("originalPath")
             .addColumn("filename")
             .addColumn("status")

@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -52,14 +53,21 @@ public class FileSystemStorageService {
 		return this.tempStore;
 	}
 
-	public void store(String fileName)	{
+	public void store(String dirName, String fileName)	{
 		// File is stored, create JSON record
 		try {
 			FileUpload fileUpload = new FileUpload();
+			fileUpload.setOriginalPath(dirName);
 			fileUpload.setFilename(fileName);
 			fileUpload.setStatus(FileUpload.STATUS.UPLOADED);
+
+			File sitePath = new File(this.analysisStore.toFile(), dirName);
+			if(!sitePath.exists())	{
+				FileUtils.forceMkdir(sitePath);
+			}
+
 			objectMapper.writeValue(
-				new File(this.analysisStore.toFile(), fileName + ".json"),
+				new File(sitePath, fileName + ".json"),
 				fileUpload		
 			);
 		} catch (IOException e) {
@@ -75,13 +83,15 @@ public class FileSystemStorageService {
 		}
 	}
 
-	public Stream<Path> loadAll() {
+	public Stream<Path> loadAll(String dirName) {
+		Path walkPath = Paths.get(this.analysisStore.toString(), dirName);
+
 		try {
-			return Files.walk(this.analysisStore, 1)
+			return Files.walk(walkPath, 1)
 				.filter(path -> !path.equals(this.analysisStore))
 				.filter(path -> !path.getFileName().toString().endsWith("users.json"))
 				.filter(path -> path.getFileName().toString().endsWith(".json"))
-				.map(this.analysisStore::resolve);
+				.map(walkPath::resolve);
 		}
 		catch (IOException e) {
 			throw new StorageException("Failed to read stored files", e);
