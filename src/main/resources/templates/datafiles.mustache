@@ -23,28 +23,34 @@
           <table id="ftpfiles" class="table display">
             <thead>
               <tr>
-                <th>Site</th>
+                <th>File</th>
+                <th>WaveForm</th>
+                <th>Voice Detected?</th>
                 <th>Status</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
-            {{#datafiles}}
+            {{#uploads}}
               <tr>
                 <td>
-                  <a href="/datafiles.html?id={{dirname}}{{name}}">{{name}}</a><br />
-                </td>  
-                <td>
-                  
+                  <a href="/file.html?id={{filename}}">{{filename}}</a><br />
                 </td>
                 <td>
+                  {{#waveform}}
+                    <img src="/fileWaveform.html?id={{filename}}" height="128" width="128" />
+                  {{/waveform}}
+                </td>
+                <td>{{voiceDetected}}</td>
+                <td>{{status}}</td>
+                <td>
                   <div class="btn-group" role="group" aria-label="Actions">
-                    <a class="btn btn-success" href="/analysis.html?id={{dirname}}{{name}}">Analyze</a>
-                    <a class="btn btn-primary" href="/export-all.html?id={{dirname}}{{name}}">Export CSV</a>
+                    <a class="btn btn-primary" href="/export.html?id={{filename}}">CSV</a>
+                    <a class="btn btn-danger" href="/delete.html?id={{filename}}">Delete</a>
                   </div>
                 </td>
               </tr>
-            {{/datafiles}}
+            {{/uploads}}
             </tbody>
           </table>
         </div>

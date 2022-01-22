@@ -2,6 +2,8 @@ package ai.ibytes.ingester.controllers;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -27,6 +29,44 @@ public class Export {
     private FileSystemStorageService storageService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
+
+    @GetMapping("/export-all.html")
+    public void getSiteCsv(Principal user, @RequestParam("id") String id, HttpServletResponse response)   {
+        log.info("Exporting to CSV SITE ID {}", id);
+        
+        List<FileUpload> fileUploads = new ArrayList<>();
+        storageService.loadAll().forEach(file -> {
+            try {
+                FileUpload f = (FileUpload)objectMapper.readValue(file.toAbsolutePath().toFile(), FileUpload.class);
+                fileUploads.add(f);
+            } catch (IOException e) {
+                log.error("Unable to read file tree.", e);
+            }
+        });
+
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename="+id+".csv");
+        
+        CsvMapper csvMapper = new CsvMapper();
+        Builder csvSchemaBuilder = CsvSchema.builder();
+        CsvSchema schema = csvSchemaBuilder
+            .addColumn("id")
+            .addColumn("originalPath")
+            .addColumn("filename")
+            .addColumn("status")
+            .addColumn("waveform", ColumnType.BOOLEAN)
+            .addColumn("voiceDetected", ColumnType.BOOLEAN)
+            .addColumn("voiceDetectTimes").build().withHeader();
+        
+        try {
+            csvMapper
+                .writerFor(List.class)
+                .with(schema)
+                .writeValue(response.getWriter(), fileUploads);
+        } catch (IOException e) {
+           log.error("Error creating SITE CSV",e);
+        }
+    }
 
     @GetMapping("/export.html")
     public void getCsv(Principal user, @RequestParam("id") String id, HttpServletResponse response)   {

@@ -1,6 +1,8 @@
 package ai.ibytes.ingester.controllers;
 
+import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import ai.ibytes.ingester.config.StorageConfig;
+import ai.ibytes.ingester.model.FileUpload;
 import ai.ibytes.ingester.storage.FileSystemStorageService;
 import ai.ibytes.ingester.util.FtpClient;
 import lombok.extern.slf4j.Slf4j;
@@ -60,5 +63,24 @@ public class Index {
         ftpClient.disconnect();
 
         return new ModelAndView("site", model);
+    }
+
+    @GetMapping( path = "/datafiles.html")
+    public ModelAndView getDataFilesPage(Principal user, Map<String, Object> model, @RequestParam("id") Optional<String> id)   {
+        // @todo centralize
+        model.put("user",(user!=null) ? user.getName() : "ANON");
+
+        List<FileUpload> uploads = new ArrayList<>();
+        storageService.loadAll().forEach(file -> {
+            try {
+                FileUpload f = (FileUpload)objectMapper.readValue(file.toAbsolutePath().toFile(), FileUpload.class);
+                uploads.add(f);
+            } catch (IOException e) {
+                log.error("Unable to read file tree.", e);
+            }
+        });
+        model.put("uploads", uploads);
+
+        return new ModelAndView("datafiles", model);
     }
 }
