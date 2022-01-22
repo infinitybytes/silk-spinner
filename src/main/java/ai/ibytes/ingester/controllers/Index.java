@@ -37,9 +37,12 @@ public class Index {
         model.put("user",(user!=null) ? user.getName() : "ANON");
 
         try {
+            ftpClient.connect();
             model.put("datafiles", (id.isPresent()) ? ftpClient.ls(id.get()) : ftpClient.ls());
         } catch (Exception e) {
             log.error("Error listing remote dir",e);
+        } finally {
+            ftpClient.disconnect();
         }
 
         return new ModelAndView("index", model);

@@ -21,6 +21,7 @@ public class DataFile {
     private String slug;
     private DataFile.STATUS status = DataFile.STATUS.UPLOADED;
     private Path localTempFile;
+    private String name;
 
     private boolean voiceDetected = false;
 
@@ -31,7 +32,10 @@ public class DataFile {
     }
 
     public String getName() {
-        return rawFile.getName();
+        if(rawFile!=null)   {
+            return rawFile.getName();
+        }
+        return this.name;
     }
 
     public boolean isDirectory()    {

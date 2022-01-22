@@ -1,15 +1,15 @@
 package ai.ibytes.ingester.controllers;
 
 import java.io.File;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -37,38 +37,52 @@ public class Analysis {
     private AnalyzeAudio analyzeAudio;
 
     @GetMapping( path = "/analysis.html")
-    public ModelAndView getIndexPage(Principal user, Map<String, Object> model, @RequestParam("id") Optional<String> id)   {
+    public ModelAndView getIndexPage(Principal user, Map<String, Object> model, @RequestParam("id") Optional<String> id) throws IOException   {
         model.put("user",(user!=null) ? user.getName() : "ANON");
 
-        try {
-            List<DataFile> datafiles = ftpClient.ls(id.get());
+        if(id.get().endsWith(".WAV"))   {
+            // single
+            File localFile = new File(storageConfig.getTempStore(), id.get().substring(id.get().lastIndexOf("/")));
+            if(!localFile.exists())  {
+                ftpClient.connect();
+                ftpClient.getRemote(id.get(), localFile);
+                ftpClient.disconnect();
 
-            // Submit the analyzer to a threadpool
-            datafiles.stream().forEach(file -> {
-                // skip goback
-                if(!file.getName().endsWith(".")) {
-                    // download file to temp
-                    try {
-                        // create json data file locally
-                        storageService.store(file.getName());
+                // submit to the analyzer
+                DataFile file = new DataFile();
+                file.setName(localFile.getName());
+                file.setLocalTempFile(localFile.toPath());
+                analyzeAudio.setDataFile(file);
 
-                        // create local temp file
-                        File localFile = new File(storageConfig.getTempStore(), file.getName());
-                        ftpClient.getRemote(file, localFile);
+                // create json data file locally
+                storageService.store(file.getName());
 
-                        // submit to the analyzer
-                        file.setLocalTempFile(localFile.toPath());
-                        analyzeAudio.setDataFile(file);
+                // send to analyzer
+                analyzeAudio.run();
+            }
+        }
+        else    {
+            try {
+                ftpClient.connect();
+                List<DataFile> datafiles = ftpClient.ls(id.get());
+                ftpClient.disconnect();
 
-                        // submit to threadpool
-                        log.info("About to work on {}", file.toString());
-                    } catch (Exception e) {
-                        log.error("Unable to get remote file: {}",file.getRawFile(),e);
+                // Submit the analyzer to a threadpool
+                datafiles.stream().forEach(file -> {
+                    // skip goback
+                    if(!file.getName().endsWith(".")) {
+                        // recurse
+                        try {
+                            getIndexPage(user, model, Optional.of(id.get() + '/' + file.getName()));
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
                     }
-                }
-            });
-        } catch (Exception e) {
-            log.error("Error listing remote dir",e);
+                });
+            } catch (Exception e) {
+                log.error("Error listing remote dir",e);
+            } 
         }
 
         return new ModelAndView("index", model);
