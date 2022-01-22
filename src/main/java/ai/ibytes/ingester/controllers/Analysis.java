@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -64,7 +65,7 @@ public class Analysis {
         else    {
             try {
                 ftpClient.connect();
-                List<DataFile> datafiles = ftpClient.ls(id.get());
+                List<FTPFile> datafiles = ftpClient.ls(id.get());
                 ftpClient.disconnect();
 
                 // Submit the analyzer to a threadpool

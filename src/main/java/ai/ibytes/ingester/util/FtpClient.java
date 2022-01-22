@@ -64,7 +64,7 @@ public class FtpClient {
      * @return
      * @throws IOException
      */
-    public List<DataFile> ls(String dirName) {
+    public List<FTPFile> ls(String dirName) {
         List<FTPFile> files = new ArrayList<>();
         try {
             files = Arrays.asList(ftp.listFiles(storageConfig.getDataFiles() + dirName));
@@ -73,20 +73,10 @@ public class FtpClient {
             e.printStackTrace();
         }
 
-        List<DataFile> dataFiles = new ArrayList<>();
-        files.stream().forEach(file -> {
-            if(!file.getName().equals(".")) {
-                DataFile df = new DataFile();
-                df.setRawFile(file);
-                df.setSlug(dirName);
-                dataFiles.add(df);
-            }
-        });
-
-        return dataFiles;
+        return files;
     }
 
-    public List<DataFile> ls()   {
+    public List<FTPFile> ls()   {
         return ls("");
     }
 
