@@ -104,7 +104,7 @@ public class FileSystemStorageService {
 	}
 
 	public Path loadJson(String dirName, String fileName)	{
-		Path sitePath = Paths.get(dirName, fileName + ".json");
+		Path sitePath = Paths.get(this.analysisStore.toString(), dirName, fileName + ".json");
 		return analysisStore.resolve(sitePath);
 	}
 
