@@ -1,11 +1,13 @@
 package ai.ibytes.ingester.controllers;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,15 +38,27 @@ public class Index {
     public ModelAndView getIndexPage(Principal user, Map<String, Object> model, @RequestParam("id") Optional<String> id)   {
         model.put("user",(user!=null) ? user.getName() : "ANON");
 
-        try {
-            ftpClient.connect();
-            model.put("datafiles", (id.isPresent()) ? ftpClient.ls(id.get()) : ftpClient.ls());
-        } catch (Exception e) {
-            log.error("Error listing remote dir",e);
-        } finally {
-            ftpClient.disconnect();
-        }
+        String dirname = (id.isPresent()) ? id.get() + '/' : "/";
+        model.put("dirname", dirname);
+
+        ftpClient.connect();
+        model.put("datafiles", ftpClient.ls(dirname));
+        ftpClient.disconnect();
 
         return new ModelAndView("index", model);
+    }
+
+    @GetMapping( path = "/site.html")
+    public ModelAndView getSitePage(Principal user, Map<String, Object> model, @RequestParam("id") Optional<String> id)   {
+        model.put("user",(user!=null) ? user.getName() : "ANON");
+
+        String dirname = (id.isPresent()) ? id.get() + '/' : "/";
+        model.put("dirname", dirname);
+
+        ftpClient.connect();
+        model.put("datafiles", ftpClient.ls(dirname));
+        ftpClient.disconnect();
+
+        return new ModelAndView("site", model);
     }
 }
