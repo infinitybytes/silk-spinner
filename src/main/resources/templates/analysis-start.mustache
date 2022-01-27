@@ -19,32 +19,8 @@
       {{>layout/navbar}}
 
       <div class="mb-3">
-        <div class="table-responsive">
-          <table id="ftpfiles" class="table display">
-            <thead>
-              <tr>
-                <th>Season</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-            {{#datafiles}}
-              <tr>
-                <td>
-                  <a href="/site.html?id={{dirname}}{{name}}">{{name}}</a><br />
-                </td>  
-                <td>
-                  <div class="btn-group" role="group" aria-label="Actions">
-                    <a class="btn btn-success" href="/analysis.html?id={{dirname}}{{name}}">Analyze</a>
-                    <a class="btn btn-primary" href="/export-all.html?id={{dirname}}{{name}}">Export CSV</a>
-                  </div>
-                </td>
-              </tr>
-            {{/datafiles}}
-            </tbody>
-          </table>
-        </div>
-      </div>  
+        {{message}}
+      </div>
     </div>
 
     <div class="container">
