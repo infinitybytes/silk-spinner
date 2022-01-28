@@ -37,9 +37,7 @@ public class Analysis {
     private AnalyzeAudio analyzeAudio;
 
     @GetMapping( path = "/analysis.html")
-    public ModelAndView getIndexPage(Principal user, Map<String, Object> model, @RequestParam("id") Optional<String> id) throws IOException   {
-        model.put("user",(user!=null) ? user.getName() : "ANON");
-
+    public ModelAndView getIndexPage(Map<String, Object> model, @RequestParam("id") Optional<String> id) throws IOException   {
         // Run analysis
         analyze(id.get());
 

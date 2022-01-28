@@ -31,7 +31,7 @@ public class Export {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @GetMapping("/export-all.html")
-    public void getSiteCsv(Principal user, @RequestParam("id") String id, HttpServletResponse response)   {
+    public void getSiteCsv(@RequestParam("id") String id, HttpServletResponse response)   {
         log.info("Exporting to CSV SITE ID {}", id);
         
         List<FileUpload> fileUploads = new ArrayList<>();

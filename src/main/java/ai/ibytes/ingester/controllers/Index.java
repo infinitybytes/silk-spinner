@@ -39,9 +39,7 @@ public class Index {
     private ObjectMapper objectMapper = new ObjectMapper();
     
     @GetMapping( path = {"/", "/index.html"})
-    public ModelAndView getIndexPage(Principal user, Map<String, Object> model, @RequestParam("id") Optional<String> id)   {
-        model.put("user",(user!=null) ? user.getName() : "ANON");
-
+    public ModelAndView getIndexPage(Map<String, Object> model, @RequestParam("id") Optional<String> id)   {
         String dirname = (id.isPresent()) ? id.get() + '/' : "/";
         model.put("dirname", dirname);
 
@@ -53,9 +51,7 @@ public class Index {
     }
 
     @GetMapping( path = "/site.html")
-    public ModelAndView getSitePage(Principal user, Map<String, Object> model, @RequestParam("id") Optional<String> id)   {
-        model.put("user",(user!=null) ? user.getName() : "ANON");
-
+    public ModelAndView getSitePage(Map<String, Object> model, @RequestParam("id") Optional<String> id)   {
         String dirname = (id.isPresent()) ? id.get() + '/' : "/";
         model.put("dirname", dirname);
 
@@ -67,10 +63,7 @@ public class Index {
     }
 
     @GetMapping( path = "/datafiles.html")
-    public ModelAndView getDataFilesPage(Principal user, Map<String, Object> model, @RequestParam("id") Optional<String> id)   {
-        // @todo centralize
-        model.put("user",(user!=null) ? user.getName() : "ANON");
-
+    public ModelAndView getDataFilesPage(Map<String, Object> model, @RequestParam("id") Optional<String> id)   {
         List<FileUpload> uploads = new ArrayList<>();
         try {
             storageService.loadAll(id.get()).forEach(file -> {

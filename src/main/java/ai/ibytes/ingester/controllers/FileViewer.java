@@ -31,9 +31,7 @@ public class FileViewer {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @GetMapping("/file.html")
-    public ModelAndView getFileViewer(Principal user, @RequestParam("id") String id, Map<String, Object> model) {
-        model.put("user",(user!=null) ? user.getName() : "ANON");
-
+    public ModelAndView getFileViewer(@RequestParam("id") String id, Map<String, Object> model) {
         log.info("Retrieving file ID {}", id);
         FileUpload fileJson = new FileUpload();
 
@@ -46,7 +44,7 @@ public class FileViewer {
     }
 
     @GetMapping("/fileBytes.html")
-    @ResponseBody FileSystemResource getFileResource(Principal user, @RequestParam("id") String id, HttpServletResponse response)   {
+    @ResponseBody FileSystemResource getFileResource(@RequestParam("id") String id, HttpServletResponse response)   {
         log.info("Retrieving filebytes ID {}", id);
         FileUpload fileJson = new FileUpload();
 
@@ -66,7 +64,7 @@ public class FileViewer {
     }
 
     @GetMapping("/fileWaveform.html")
-    @ResponseBody FileSystemResource getFileWaveform(Principal user, @RequestParam("id") String id, HttpServletResponse response)   {
+    @ResponseBody FileSystemResource getFileWaveform(@RequestParam("id") String id, HttpServletResponse response)   {
         log.info("Retrieving waveform for ID {}", id);
         FileUpload fileJson = new FileUpload();
 

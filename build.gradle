@@ -23,7 +23,6 @@ dependencies {
 	implementation 'commons-net:commons-net:3.8.0'
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
 
-	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-mustache'  
 	implementation('org.springframework.boot:spring-boot-starter-web')  {
 		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
@@ -38,8 +37,6 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
 }
 
 test {
