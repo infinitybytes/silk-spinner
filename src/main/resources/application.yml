@@ -13,14 +13,8 @@ spring:
           enabled: false
             
 app:
-  rootDir: /data/app
+  rootDir: /srv/silkspinner
   
 storage:
-  ftpHost: 10.0.0.1
-  dataFiles: /shares/filepile/0_originals/audiomoth
-  analysisStore: /data/app/store
-  tempStore: /data/app/temp
-
-auth:
-  username: admin
-  password: tVaI0l30AcKX
+  audioFiles: /mnt/filepile/0_originals/audiomoth
+  dataFiles: /srv/silkspinner/store

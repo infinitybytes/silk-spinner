@@ -4,6 +4,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import ai.ibytes.ingester.util.Status;
+import ai.ibytes.ingester.util.Tags;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,11 +16,15 @@ import lombok.ToString;
 @ToString
 @Data
 public class DataFile {
-    public enum STATUS {UPLOADED, CONVERTED, NEEDS_VAD, ANALYZED, ARCHIVED}
-    private String dirName;
-    private DataFile.STATUS status = DataFile.STATUS.UPLOADED;
-    private Path localTempFile;
-    private String name;
+    private Status status = Status.NEW;
+    private List<Tags> tags = new ArrayList<Tags>();
+    
+    private String id;
+    private String filePath;
+    private String fileName;
+    private Path audioFile;
+
+    private byte[] waveFormBytes;
 
     private boolean voiceDetected = false;
 

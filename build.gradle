@@ -15,11 +15,14 @@ configurations {
 }
 
 repositories {
+	mavenLocal()
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 	mavenCentral()
 }
 
 dependencies {
+	implementation 'ai.ibytes:gigabyts:1.0.2-SNAPSHOT'
+
 	implementation 'commons-net:commons-net:3.8.0'
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
 
