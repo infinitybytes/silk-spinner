@@ -7,6 +7,5 @@ import lombok.Data;
 @ConfigurationProperties("storage")
 @Data
 public class StorageConfig {
-    private String audioFiles;
     private String dataFiles;
 }

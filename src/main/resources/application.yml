@@ -13,8 +13,7 @@ spring:
           enabled: false
             
 app:
-  rootDir: /srv/silkspinner
+  rootDir: /data/app
   
 storage:
-  audioFiles: /mnt/filepile/0_originals/audiomoth
-  dataFiles: /srv/silkspinner/store
+  dataFiles: /data/app/store

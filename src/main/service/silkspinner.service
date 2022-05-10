@@ -1,11 +1,11 @@
 [Unit]
-Description=avingest
+Description=silkspinner
 After=syslog.target
 
 [Service]
 User=ec2-user
 WorkingDirectory=/data/app
-ExecStart=/usr/bin/java -jar /data/app/ingester-1.0.0-SNAPSHOT.jar
+ExecStart=/usr/bin/java -jar /data/app/silkspinner.jar
 SuccessExitStatus=143
 
 [Install]

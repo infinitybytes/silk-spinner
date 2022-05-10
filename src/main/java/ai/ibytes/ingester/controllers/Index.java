@@ -3,8 +3,6 @@ package ai.ibytes.ingester.controllers;
 import java.util.Map;
 import java.util.Optional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,8 +20,6 @@ public class Index {
 
     @Autowired
     private StorageConfig storageConfig;
-
-    private ObjectMapper objectMapper = new ObjectMapper();
     
     @GetMapping( path = {"/", "/index.html"})
     public ModelAndView getIndexPage(Map<String, Object> model, @RequestParam("id") Optional<String> id)   {
