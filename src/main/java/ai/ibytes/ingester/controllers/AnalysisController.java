@@ -11,11 +11,15 @@ import org.springframework.web.servlet.ModelAndView;
 import ai.ibytes.ingester.storage.FileSystemStorageService;
 import ai.ibytes.ingester.storage.model.DataFile;
 import ai.ibytes.ingester.storage.model.Site;
+import ai.ibytes.ingester.tasks.GenerateAudioStats;
 
 @Controller
 public class AnalysisController {
     @Autowired
     private FileSystemStorageService storageService;
+
+    @Autowired
+    private GenerateAudioStats generateAudioStats;
 
     @GetMapping( path = "/analyze-file.html")
     public ModelAndView getAnalyzeFile(Map<String, Object> model, @RequestParam("siteId") String siteId, @RequestParam("id") String id)   {
@@ -25,6 +29,10 @@ public class AnalysisController {
 
         DataFile dataFile = storageService.getDataFile(siteId, id);
 
+        // Generate audio stats
+        generateAudioStats.generate(dataFile);
+
+        // Send to model
         model.put("dataFile",dataFile);
 
         return new ModelAndView("datafile", model);

@@ -40,6 +40,9 @@ public class DataFile {
     @Builder.Default
     private List<String> voiceDetectTimes = new ArrayList<>();
 
+    private RMSAnalysis rmsAnalysis;
+    private PeakAnalysis peakAnalysis;
+
     public String getId()   {
         return( UUID.nameUUIDFromBytes( (path+name).getBytes() ).toString() );
     }
