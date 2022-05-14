@@ -44,18 +44,34 @@
         <br />
     
         <h3>Decibal Analysis</h3>
-        <div class="mb-3">
-            <div class="table-responsive">
-                <table class="table display">
-                    <thead>
-                        
-                    </thead>
-                    <tbody>
-                        {{#dataFile.peakAnalysis.frames}}
-                            <tr><td>{{pkt_pts_time}}</td><td>{{tags}}</td></tr>
-                        {{/dataFile.peakAnalysis.frames}}
-                    </tbody>
-                </table>
+        <div class="row">
+            <div class="col mb-3">
+                <div class="table-responsive">
+                    <table class="table display">
+                        <thead>
+                            <tr><th></th><th>Peak</th></tr>
+                        </thead>
+                        <tbody>
+                            {{#dataFile.peakAnalysis.frames}}
+                                <tr><td>{{pkt_pts_time}}</td><td>{{decibal}}</td></tr>
+                            {{/dataFile.peakAnalysis.frames}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col mb-3">
+                <div class="table-responsive">
+                    <table class="table display">
+                        <thead>
+                            <tr><th>RMS</th></tr>
+                        </thead>
+                        <tbody>
+                            {{#dataFile.rmsAnalysis.frames}}
+                                <tr><td>{{decibal}}</td></tr>
+                            {{/dataFile.rmsAnalysis.frames}}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -69,6 +85,7 @@
     <script src="https://unpkg.com/wavesurfer.js"></script>
     <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.timeline.min.js"></script>
     <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.spectrogram.min.js"></script>
+    <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.markers.min.js"></script>
     <script>
         var wavesurfer = WaveSurfer.create({
             container: '#waveform',
@@ -85,6 +102,21 @@
 
                 WaveSurfer.timeline.create({
                     container: "#wave-timeline"
+                }),
+
+                WaveSurfer.markers.create({
+                    markers: [
+                        {{#dataFile.voiceDetectTimes}}
+                        {
+                            time: {{time}},
+                            label: "VOICE",
+                            color: '#ff990a'
+                        },
+                        {{/dataFile.voiceDetectTimes}}
+                        {
+                            time: 0
+                        }
+                    ]
                 })
             ]
         });

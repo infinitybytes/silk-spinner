@@ -11,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import ai.ibytes.ingester.storage.FileSystemStorageService;
 import ai.ibytes.ingester.storage.model.DataFile;
 import ai.ibytes.ingester.storage.model.Site;
+import ai.ibytes.ingester.tasks.DetectHumanVoice;
 import ai.ibytes.ingester.tasks.GenerateAudioStats;
 
 @Controller
@@ -20,6 +21,9 @@ public class AnalysisController {
 
     @Autowired
     private GenerateAudioStats generateAudioStats;
+
+    @Autowired
+    private DetectHumanVoice detectHumanVoice;
 
     @GetMapping( path = "/analyze-file.html")
     public ModelAndView getAnalyzeFile(Map<String, Object> model, @RequestParam("siteId") String siteId, @RequestParam("id") String id)   {
@@ -32,6 +36,9 @@ public class AnalysisController {
         // Generate audio stats
         generateAudioStats.generate(dataFile);
 
+        // Detect voice
+        detectHumanVoice.detectVoice(dataFile);
+        
         // Send to model
         model.put("dataFile",dataFile);
 

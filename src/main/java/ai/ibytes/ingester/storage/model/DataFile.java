@@ -38,7 +38,7 @@ public class DataFile {
     private List<Tags> tags = new ArrayList<Tags>();
 
     @Builder.Default
-    private List<String> voiceDetectTimes = new ArrayList<>();
+    private List<Long> voiceDetectTimes = new ArrayList<>();
 
     private RMSAnalysis rmsAnalysis;
     private PeakAnalysis peakAnalysis;
