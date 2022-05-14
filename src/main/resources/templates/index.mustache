@@ -20,15 +20,28 @@
 
       <div class="mb-3">
         <div class="table-responsive">
-          <table id="ftpfiles" class="table display">
+          <table id="sites" class="table display">
             <thead>
               <tr>
-                <th width="90%">Site</th>
+                <th>Site</th>
+                <th>Season</th>
                 <th><a class="btn btn-primary" href="/add-site.html">Add Site</a></th>
               </tr>
             </thead>
             <tbody>
-            
+            {{#sites}}
+              <tr>
+                <td>
+                  <a href="/site.html?id={{id}}">{{name}}</a><br />
+                </td>
+                <td>
+                  {{season}}
+                </td>
+                <td>
+                  
+                </td>
+              </tr>
+            {{/sites}}
             </tbody>
           </table>
         </div>
@@ -44,7 +57,7 @@
 
     <script type="text/javascript" class="init">
         $(document).ready(function() {
-            $("#ftpfiles").DataTable();
+            $("#sites").DataTable();
         } );
     </script>
   </body>

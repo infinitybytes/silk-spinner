@@ -70,4 +70,21 @@ public class FileSystemStorageService {
 			throw new StorageException("Error saving Site to disk",e);
 		}
 	}
+
+	public List<Site> getSites()	{
+		File siteLocation = new File(dataFiles.toFile(), "sites.json");
+		List<Site> sites = new ArrayList<Site>();
+		
+		try {
+			sites = Arrays.asList(
+				objectMapper.readValue(siteLocation, Site[].class))
+					.stream()
+				.collect(Collectors.toList());
+		} catch (IOException e) {
+			log.error("Error getting Sites from disk", e);
+			throw new StorageException("Error getting Sites from disk",e);
+		}
+
+		return sites;
+	}
 }
