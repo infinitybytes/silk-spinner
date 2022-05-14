@@ -1,5 +1,7 @@
 package ai.ibytes.ingester.storage.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,6 +25,10 @@ public class Site {
     private String season;
     private String dataLocation;
     private long numSourceFiles;
+    private long numAnalyzedFiles;
+
+    @Builder.Default
+    private List<DataFile> dataFiles = new ArrayList<DataFile>();
 
     public String getId()   {
         return( UUID.nameUUIDFromBytes( (name+season).getBytes() ).toString() );

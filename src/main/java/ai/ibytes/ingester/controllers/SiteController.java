@@ -51,4 +51,10 @@ public class SiteController {
         storageService.deleteSite(id);
         return new ModelAndView("redirect:/index.html", model);
     }
+
+    @GetMapping( path = "/site.html")
+    public ModelAndView getSitePage(Map<String, Object> model, @RequestParam("id") String id)   {
+        model.put("site", storageService.getSite(id));
+        return new ModelAndView("site", model);
+    }
 }

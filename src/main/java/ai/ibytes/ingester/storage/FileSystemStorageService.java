@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import ai.ibytes.ingester.config.StorageConfig;
 import ai.ibytes.ingester.storage.exceptions.StorageException;
+import ai.ibytes.ingester.storage.model.DataFile;
 import ai.ibytes.ingester.storage.model.Site;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
@@ -66,7 +67,16 @@ public class FileSystemStorageService {
 
 			// Count raw source files
 			try (Stream<Path> files = Files.list(Paths.get(site.getDataLocation()))) {
-				site.setNumSourceFiles(files.count());
+				files.forEach(f -> {
+					site.getDataFiles().add(
+						DataFile.builder()
+							.path(f.toFile().getPath())
+							.name(f.toFile().getName())
+						.build()
+					);
+				});
+
+				site.setNumSourceFiles(site.getDataFiles().size());
 			}
 
 			existingSites.add(site);

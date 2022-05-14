@@ -12,39 +12,42 @@
 	
 	  </style>
 
-    <title>SilkSpinner</title>
+    <title>SilkSpinner - {{site.name}}</title>
   </head>
   <body>
     <div class="container">
       {{>layout/navbar}}
 
+      <div class="bg-light p-5 rounded">
+        <h1>{{site.name}}</h1>
+        <p class="lead">
+          {{site.season}} - Source Files: {{site.numSourceFiles}} - Analyzed Files: {{site.numAnalyzedFiles}}
+          <br />
+          Source File Location: {{site.dataLocation}}
+        </p>
+        <a class="btn btn-lg btn-primary" href="/analysis.html?id={{site.id}}" role="button">Run Analysis</a>
+      </div>
+      <br />
       <div class="mb-3">
         <div class="table-responsive">
-          <table id="ftpfiles" class="table display">
+          <table id="datafiles" class="table display">
             <thead>
               <tr>
-                <th>Site</th>
+                <th>Source File</th>
+                <th>WaveForm</th>
                 <th>Status</th>
-                <th></th>
+                <th>Tags</th>
               </tr>
             </thead>
             <tbody>
-            {{#datafiles}}
+            {{#site.dataFiles}}
               <tr>
-                <td>
-                  <a href="/datafiles.html?id={{dirname}}{{name}}">{{name}}</a><br />
-                </td>  
-                <td>
-                  
-                </td>
-                <td>
-                  <div class="btn-group" role="group" aria-label="Actions">
-                    <a class="btn btn-success" href="/analysis.html?id={{dirname}}{{name}}">Analyze</a>
-                    <a class="btn btn-primary" href="/export-all.html?id={{dirname}}{{name}}">Export CSV</a>
-                  </div>
-                </td>
+                <td>{{name}}<br /><em>{{path}}</em></td>
+                <td></td>
+                <td>{{status}}</td>
+                <td>{{tags}}</td>
               </tr>
-            {{/datafiles}}
+            {{/site.dataFiles}}
             </tbody>
           </table>
         </div>
@@ -60,7 +63,7 @@
 
     <script type="text/javascript" class="init">
         $(document).ready(function() {
-            $("#ftpfiles").DataTable();
+            $("#datafiles").DataTable();
         } );
     </script>
   </body>
