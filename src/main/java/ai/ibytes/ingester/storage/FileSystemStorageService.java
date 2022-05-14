@@ -139,4 +139,13 @@ public class FileSystemStorageService {
 
 		return site;
 	}
+
+	public DataFile getDataFile(String siteId, String id)	{
+		Site site = getSite(siteId);
+		return site.getDataFiles()
+				.stream()
+				.filter(df -> df.getId().equals(id))
+				.findFirst()
+			.get();
+	}
 }
