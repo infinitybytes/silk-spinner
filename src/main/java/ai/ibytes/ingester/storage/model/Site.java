@@ -18,10 +18,11 @@ import lombok.ToString;
 public class Site {
     @JsonIgnore
     private String id;
-    
+
     private String name;
     private String season;
     private String dataLocation;
+    private long numSourceFiles;
 
     public String getId()   {
         return( UUID.nameUUIDFromBytes( (name+season).getBytes() ).toString() );

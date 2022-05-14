@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -63,6 +64,11 @@ public class FileSystemStorageService {
 					.collect(Collectors.toList());
 			}
 
+			// Count raw source files
+			try (Stream<Path> files = Files.list(Paths.get(site.getDataLocation()))) {
+				site.setNumSourceFiles(files.count());
+			}
+
 			existingSites.add(site);
 			objectMapper.writeValue(siteLocation, existingSites);
 		} catch (IOException e) {
@@ -104,5 +110,23 @@ public class FileSystemStorageService {
 		}
 
 		return sites;
+	}
+
+	public Site getSite(String id)	{
+		File siteLocation = new File(dataFiles.toFile(), "sites.json");
+		Site site = new Site();
+		try {
+			site = (Site)Arrays.asList(
+				objectMapper.readValue(siteLocation, Site[].class))
+					.stream()
+					.filter(s -> s.getId().equals(id))
+					.findFirst()
+				.get();
+		} catch (IOException e) {
+			log.error("{}: Error getting Site from disk",id, e);
+			throw new StorageException("Error getting Site from disk",e);
+		}
+
+		return site;
 	}
 }

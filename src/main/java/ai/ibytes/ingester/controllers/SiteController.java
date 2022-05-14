@@ -20,11 +20,18 @@ public class SiteController {
 
     @GetMapping( path = "/add-site.html")
     public ModelAndView getAddSitePage(Map<String, Object> model)   {
-        return new ModelAndView("add-site", model);
+        model.put("site", Site.builder().name("").season("").dataLocation("").build());
+        return new ModelAndView("manage-site", model);
     }
 
-    @PostMapping( path = "/add-site.html")
-    public ModelAndView postAddSitePage(Map<String, Object> model, @ModelAttribute Site site)   {
+    @GetMapping( path = "/edit-site.html")
+    public ModelAndView getEditSitePage(Map<String, Object> model, @RequestParam("id") String id)   {
+        model.put("site", storageService.getSite(id));
+        return new ModelAndView("manage-site", model);
+    }
+
+    @PostMapping( path = "/manage-site.html")
+    public ModelAndView postSitePage(Map<String, Object> model, @ModelAttribute Site site)   {
         storageService.store(site);
         return new ModelAndView("redirect:/index.html", model);
     }
