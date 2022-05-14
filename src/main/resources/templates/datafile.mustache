@@ -46,11 +46,13 @@
         <h3>Decibal Analysis</h3>
         <div class="row">
             <div class="col mb-3">
-                <div class="table-responsive">
+                <table class="table display">
+                    <thead>
+                        <tr><th>Time</th><th>Peak</th></tr>
+                    </thead>
+                </table>
+                <div class="table-responsive" style="max-height:180px;">
                     <table class="table display">
-                        <thead>
-                            <tr><th></th><th>Peak</th></tr>
-                        </thead>
                         <tbody>
                             {{#dataFile.peakAnalysis.frames}}
                                 <tr><td>{{pkt_pts_time}}</td><td>{{decibal}}</td></tr>
@@ -60,14 +62,16 @@
                 </div>
             </div>
             <div class="col mb-3">
-                <div class="table-responsive">
+                <table class="table display">
+                    <thead>
+                        <tr><th>Time</th><th>RMS</th></tr>
+                    </thead>
+                </table>
+                <div class="table-responsive" style="max-height:180px;">
                     <table class="table display">
-                        <thead>
-                            <tr><th>RMS</th></tr>
-                        </thead>
                         <tbody>
                             {{#dataFile.rmsAnalysis.frames}}
-                                <tr><td>{{decibal}}</td></tr>
+                                <tr><td>{{pkt_pts_time}}</td><td>{{decibal}}</td></tr>
                             {{/dataFile.rmsAnalysis.frames}}
                         </tbody>
                     </table>
