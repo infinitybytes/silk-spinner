@@ -1,6 +1,5 @@
-package ai.ibytes.ingester.model;
+package ai.ibytes.ingester.storage.model;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,17 +15,14 @@ import lombok.ToString;
 @ToString
 @Data
 public class DataFile {
-    private Status status = Status.NEW;
-    private List<Tags> tags = new ArrayList<Tags>();
-    
     private String id;
     private String filePath;
     private String fileName;
-    private Path audioFile;
 
     private byte[] waveFormBytes;
-
     private boolean voiceDetected = false;
 
+    private Status status = Status.NEW;
+    private List<Tags> tags = new ArrayList<Tags>();
     private List<String> voiceDetectTimes = new ArrayList<>();
 }

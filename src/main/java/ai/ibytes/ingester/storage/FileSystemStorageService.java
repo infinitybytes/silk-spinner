@@ -1,8 +1,15 @@
 package ai.ibytes.ingester.storage;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -10,8 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ai.ibytes.ingester.config.StorageConfig;
+import ai.ibytes.ingester.storage.exceptions.StorageException;
+import ai.ibytes.ingester.storage.model.Site;
+import lombok.Synchronized;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class FileSystemStorageService {
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
@@ -20,13 +32,42 @@ public class FileSystemStorageService {
 	@Autowired
 	public FileSystemStorageService(StorageConfig properties) {
 		this.dataFiles = Paths.get(properties.getDataFiles());
+
+		if(!this.dataFiles.toFile().exists())	{
+			try {
+				Files.createDirectories(this.dataFiles);
+			} catch (IOException e) {
+				log.error("Unable to create the storage location",e);
+
+				throw new StorageException("Unable to create storage location",e);
+			}
+		}
 	}
 
 	public Path getDataFilesPath()	{
 		return this.dataFiles;
 	}
 
-	public void store(String dirName, String fileName)	{
+	@Synchronized
+	public void store(Site site)	{
+		File siteLocation = new File(dataFiles.toFile(), "sites.json");
+		List<Site> existingSites = new ArrayList<Site>();
 		
+		try {
+			// Exists?
+			if(siteLocation.exists())	{
+				existingSites = Arrays.asList(
+					objectMapper.readValue(siteLocation, Site[].class))
+						.stream()
+						.filter(s -> !s.getId().equals(site.getId()))
+					.collect(Collectors.toList());
+			}
+
+			existingSites.add(site);
+			objectMapper.writeValue(siteLocation, existingSites);
+		} catch (IOException e) {
+			log.error("{}: Error saving Site to disk",site.getId(), e);
+			throw new StorageException("Error saving Site to disk",e);
+		}
 	}
 }

@@ -13,7 +13,7 @@ import ai.ibytes.ingester.config.StorageConfig;
 import ai.ibytes.ingester.storage.FileSystemStorageService;
 
 @Controller
-public class Index {
+public class IndexController {
     
     @Autowired
     private FileSystemStorageService storageService;

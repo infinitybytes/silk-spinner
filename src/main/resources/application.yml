@@ -6,12 +6,7 @@ server:
     key-store-type: pkcs12
     key-alias: springboot
   port: 8080
-
-spring:
-    servlet:
-        multipart:
-          enabled: false
-            
+           
 app:
   rootDir: /data/app
   
