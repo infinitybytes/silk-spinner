@@ -1,5 +1,6 @@
 package ai.ibytes.ingester.controllers;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import ai.ibytes.ingester.storage.FileSystemStorageService;
+import ai.ibytes.ingester.storage.exceptions.StorageException;
 import ai.ibytes.ingester.storage.model.Site;
 
 @Controller
@@ -32,7 +34,15 @@ public class SiteController {
 
     @PostMapping( path = "/manage-site.html")
     public ModelAndView postSitePage(Map<String, Object> model, @ModelAttribute Site site)   {
-        storageService.store(site);
+        try {
+            storageService.store(site);
+        }
+        catch(StorageException e)   {
+            model.put("errors", Arrays.asList(new String[]{e.getMessage()}));
+            model.put("site",site);
+            return new ModelAndView("manage-site",model);
+        }
+
         return new ModelAndView("redirect:/index.html", model);
     }
 
