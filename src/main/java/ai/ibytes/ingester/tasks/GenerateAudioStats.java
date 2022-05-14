@@ -3,6 +3,7 @@ package ai.ibytes.ingester.tasks;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
+import java.nio.file.Files;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,10 +27,12 @@ public class GenerateAudioStats {
     
     public void generate(DataFile dataFile)    {
         File tmpOutput = new File("/tmp", UUID.randomUUID().toString());
-        File peakOutput = new File(tmpOutput, ".peak.json");
-        File rmsOutput = new File(tmpOutput, ".rms.json");
+        File peakOutput = new File(tmpOutput, "peak.json");
+        File rmsOutput = new File(tmpOutput, "rms.json");
 
         try {
+            Files.createDirectories(tmpOutput.toPath());
+            
             Process proc = new ProcessBuilder(
                     "sh",
                     appConfig.getRootDir()+"/generate-audio-stats.sh", 

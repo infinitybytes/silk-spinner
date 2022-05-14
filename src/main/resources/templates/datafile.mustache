@@ -29,7 +29,7 @@
         </div>
 
         <br />
-        <h3>Analysis</h3>
+        <h3>Audio Analysis</h3>
         <div class="mb-3">
             <div id="waveform" style="border:1px solid grey"></div>
             <div id="wave-timeline"></div>
@@ -39,6 +39,24 @@
         </div> 
         <div class="mb-3">
             <button class="btn btn-primary" data-action="play" onclick="wavesurfer.playPause()">Play / Pause</button>
+        </div>
+
+        <br />
+    
+        <h3>Decibal Analysis</h3>
+        <div class="mb-3">
+            <div class="table-responsive">
+                <table class="table display">
+                    <thead>
+                        
+                    </thead>
+                    <tbody>
+                        {{#dataFile.peakAnalysis.frames}}
+                            <tr><td>{{pkt_pts_time}}</td><td>{{tags}}</td></tr>
+                        {{/dataFile.peakAnalysis.frames}}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
