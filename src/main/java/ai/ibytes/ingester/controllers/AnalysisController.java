@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ai.ibytes.ingester.storage.FileSystemStorageService;
 import ai.ibytes.ingester.storage.model.DataFile;
+import ai.ibytes.ingester.storage.model.Site;
 
 @Controller
 public class AnalysisController {
@@ -19,6 +20,9 @@ public class AnalysisController {
     @GetMapping( path = "/analyze-file.html")
     public ModelAndView getAnalyzeFile(Map<String, Object> model, @RequestParam("siteId") String siteId, @RequestParam("id") String id)   {
         // Get the datafile
+        Site site = storageService.getSite(siteId);
+        model.put("site",site);
+        
         DataFile dataFile = storageService.getDataFile(siteId, id);
         model.put("dataFile",dataFile);
 

@@ -3,6 +3,7 @@ package ai.ibytes.ingester.storage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,6 +16,8 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 
 import ai.ibytes.ingester.config.StorageConfig;
@@ -147,5 +150,25 @@ public class FileSystemStorageService {
 				.filter(df -> df.getId().equals(id))
 				.findFirst()
 			.get();
+	}
+
+	public Resource getDataFileBytes(String siteId, String id) {
+		try {
+			DataFile dataFile = getDataFile(siteId, id);
+
+			Path file = Path.of(dataFile.getPath());
+			Resource resource = new UrlResource(file.toUri());
+			if (resource.exists() || resource.isReadable()) {
+				return resource;
+			}
+			else {
+				throw new StorageException(
+						"Could not read file: " + dataFile.getName());
+
+			}
+		}
+		catch (MalformedURLException e) {
+			throw new StorageException("Could not read file", e);
+		}
 	}
 }

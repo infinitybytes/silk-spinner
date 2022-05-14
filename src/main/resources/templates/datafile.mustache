@@ -24,7 +24,7 @@
                 <small>ID: {{dataFile.id}}</small>
             </div>
             <div class="col-2">
-                <a class="btn btn-primary" href="/fileBytes.html?id={{dataFile.id}}">Download Video</a>
+                <a class="btn btn-primary" href="/datafile-bytes.html?siteId={{site.id}}&id={{dataFile.id}}">Download Video</a>
             </div>
         </div>
 
@@ -57,7 +57,7 @@
             barHeight:5
         });
 
-        wavesurfer.load('/fileBytes.html?id={{dataFile.id}}');
+        wavesurfer.load('/datafile-bytes.html?siteId={{site.id}}&id={{dataFile.id}}');
     </script>
 
     <script type="text/javascript" class="init">
