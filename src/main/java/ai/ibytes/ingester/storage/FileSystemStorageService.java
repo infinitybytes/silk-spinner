@@ -71,6 +71,24 @@ public class FileSystemStorageService {
 		}
 	}
 
+	@Synchronized
+	public void deleteSite(String id)	{
+		File siteLocation = new File(dataFiles.toFile(), "sites.json");
+		
+		try {
+			List<Site> existingSites = Arrays.asList(
+				objectMapper.readValue(siteLocation, Site[].class))
+					.stream()
+					.filter(s -> !s.getId().equals(id))
+				.collect(Collectors.toList());
+
+			objectMapper.writeValue(siteLocation, existingSites);
+		} catch (IOException e) {
+			log.error("{}: Error deleting Site",id, e);
+			throw new StorageException("Error deleting Site",e);
+		}
+	}
+
 	public List<Site> getSites()	{
 		File siteLocation = new File(dataFiles.toFile(), "sites.json");
 		List<Site> sites = new ArrayList<Site>();
