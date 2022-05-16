@@ -61,10 +61,10 @@ public class AnalysisController {
             site.setRunningAnalysis(true);
             storageService.store(site);
 
-            analysisExecutors.submit(new Runnable() {
-                @Override
-                public void run() {
-                    site.getDataFiles().parallelStream().forEach(d -> {
+            site.getDataFiles().parallelStream().forEach(d -> {
+                    analysisExecutors.submit(new Runnable() {
+                        @Override
+                        public void run() {
                         DataFile dataFile = storageService.getDataFile(siteId, d.getId());
 
                         // Generate audio stats
@@ -78,10 +78,11 @@ public class AnalysisController {
 
                         // save back
                         storageService.storeDataFile(siteId, dataFile);
-                    });
-                }
+                    }
+                });
             });
         }
+         
 
         model.put("msgs", Arrays.asList(new String[]{"Running full site analysis in the background, refresh the page for progress"}));
         return new ModelAndView("site",model);
