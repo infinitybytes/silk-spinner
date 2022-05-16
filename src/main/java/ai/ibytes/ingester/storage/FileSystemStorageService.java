@@ -47,6 +47,17 @@ public class FileSystemStorageService {
 				throw new StorageException("Unable to create storage location",e);
 			}
 		}
+
+		File siteJson = new File(this.dataFiles.toFile(), "sites.json");
+		if(!siteJson.exists())	{
+			List<Site> existingSites = new ArrayList<Site>();	
+			try {
+				objectMapper.writeValue(siteJson, existingSites);
+			} catch (IOException e) {
+				log.error("Error creating default sites.json",e);
+				throw new StorageException("Error creating default sites.json", e);
+			}
+		}
 	}
 
 	public Path getDataFilesPath()	{
