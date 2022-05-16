@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import ai.ibytes.ingester.util.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,12 +26,20 @@ public class Site {
     private String season;
     private String dataLocation;
     private long numSourceFiles;
+
+    @JsonIgnore
     private long numAnalyzedFiles;
+
+    private boolean runningAnalysis;
 
     @Builder.Default
     private List<DataFile> dataFiles = new ArrayList<DataFile>();
 
     public String getId()   {
         return( UUID.nameUUIDFromBytes( (name+season).getBytes() ).toString() );
+    }
+
+    public long getNumAnalyzedFiles()   {
+        return( dataFiles.stream().filter(df -> df.getStatus().equals(Status.ANALYZED)).count() );
     }
 }

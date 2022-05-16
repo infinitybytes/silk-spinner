@@ -69,17 +69,19 @@ public class FileSystemStorageService {
 			}
 
 			// Count raw source files
-			try (Stream<Path> files = Files.list(Paths.get(site.getDataLocation()))) {
-				files.forEach(f -> {
-					site.getDataFiles().add(
-						DataFile.builder()
-							.path(f.toFile().getPath())
-							.name(f.toFile().getName())
-						.build()
-					);
-				});
+			if(!site.isRunningAnalysis())	{
+				try (Stream<Path> files = Files.list(Paths.get(site.getDataLocation()))) {
+					files.forEach(f -> {
+						site.getDataFiles().add(
+							DataFile.builder()
+								.path(f.toFile().getPath())
+								.name(f.toFile().getName())
+							.build()
+						);
+					});
 
-				site.setNumSourceFiles(site.getDataFiles().size());
+					site.setNumSourceFiles(site.getDataFiles().size());
+				}
 			}
 
 			existingSites.add(site);
@@ -150,6 +152,21 @@ public class FileSystemStorageService {
 				.filter(df -> df.getId().equals(id))
 				.findFirst()
 			.get();
+	}
+
+	@Synchronized
+	public void storeDataFile(String siteId, DataFile dataFile)	{
+		Site site = getSite(siteId);
+		List<DataFile> dataFiles = site.getDataFiles()
+			.stream()
+			.filter(df -> !df.getId().equals(dataFile.getId()))
+		.collect(Collectors.toList());
+
+		dataFiles.add(dataFile);
+
+		site.setDataFiles(dataFiles);
+
+		store(site);
 	}
 
 	public Resource getDataFileBytes(String siteId, String id) {
