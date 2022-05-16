@@ -4,10 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ai.ibytes.ingester.storage.FileSystemStorageService;
 import ai.ibytes.ingester.storage.model.DataFile;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.SpeechResult;
@@ -18,9 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class DetectHumanVoice {
-    @Autowired
-    private FileSystemStorageService storageService;
-
     private Configuration configuration = new Configuration();
     private StreamSpeechRecognizer recognizer;
     
@@ -28,7 +23,7 @@ public class DetectHumanVoice {
         configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
         configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
         configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
-        configuration.setSampleRate(16000);
+        configuration.setSampleRate(32000);
         try {
             recognizer = new StreamSpeechRecognizer(configuration);
         } catch (IOException e) {
