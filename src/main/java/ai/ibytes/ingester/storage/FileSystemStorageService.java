@@ -83,12 +83,14 @@ public class FileSystemStorageService {
 			if(!site.isRunningAnalysis())	{
 				try (Stream<Path> files = Files.list(Paths.get(site.getDataLocation()))) {
 					files.forEach(f -> {
-						site.getDataFiles().add(
-							DataFile.builder()
-								.path(f.toFile().getPath())
-								.name(f.toFile().getName())
-							.build()
-						);
+						if(f.toFile().getName().toUpperCase().endsWith(".WAV"))	{
+							site.getDataFiles().add(
+								DataFile.builder()
+									.path(f.toFile().getPath())
+									.name(f.toFile().getName())
+								.build()
+							);
+						}
 					});
 
 					site.setNumSourceFiles(site.getDataFiles().size());

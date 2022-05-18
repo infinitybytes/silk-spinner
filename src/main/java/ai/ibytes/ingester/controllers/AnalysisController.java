@@ -61,7 +61,7 @@ public class AnalysisController {
             site.setRunningAnalysis(true);
             storageService.store(site);
 
-            site.getDataFiles().parallelStream().forEach(d -> {
+            site.getDataFiles().stream().filter(d -> d.getStatus().equals(Status.NEW)).forEach(d -> {
                     analysisExecutors.submit(new Runnable() {
                         @Override
                         public void run() {
@@ -83,7 +83,6 @@ public class AnalysisController {
             });
         }
          
-
         model.put("msgs", Arrays.asList(new String[]{"Running full site analysis in the background, refresh the page for progress"}));
         return new ModelAndView("site",model);
     }
