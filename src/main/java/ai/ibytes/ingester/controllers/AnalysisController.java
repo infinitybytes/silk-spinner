@@ -57,9 +57,9 @@ public class AnalysisController {
         model.put("site",site);
 
         // Run async
-        if(!site.isRunningAnalysis())   {
-            site.setRunningAnalysis(true);
-            storageService.store(site);
+        // if(!site.isRunningAnalysis())   {
+        //     site.setRunningAnalysis(true);
+        //     storageService.store(site);
 
             site.getDataFiles().stream().filter(d -> d.getStatus().equals(Status.NEW)).forEach(d -> {
                     analysisExecutors.submit(new Runnable() {
@@ -81,7 +81,7 @@ public class AnalysisController {
                     }
                 });
             });
-        }
+        //}
          
         model.put("msgs", Arrays.asList(new String[]{"Running full site analysis in the background, refresh the page for progress"}));
         return new ModelAndView("site",model);
