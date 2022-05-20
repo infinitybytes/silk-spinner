@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import ai.ibytes.ingester.storage.FileSystemStorageService;
 import ai.ibytes.ingester.storage.model.DataFile;
 import ai.ibytes.ingester.storage.model.Site;
+import ai.ibytes.ingester.tasks.ConvertAudio;
 import ai.ibytes.ingester.tasks.DetectHumanVoice;
 import ai.ibytes.ingester.tasks.GenerateAudioStats;
 import ai.ibytes.ingester.util.Status;
@@ -24,6 +25,9 @@ public class AnalysisController {
 
     @Autowired
     private FileSystemStorageService storageService;
+
+    @Autowired
+    private ConvertAudio convertAudio;
 
     @Autowired
     private GenerateAudioStats generateAudioStats;
@@ -38,6 +42,9 @@ public class AnalysisController {
         model.put("site",site);
 
         DataFile dataFile = storageService.getDataFile(siteId, id);
+
+        // Convert
+        convertAudio.convert(dataFile);
 
         // Generate audio stats
         generateAudioStats.generate(dataFile);
@@ -56,32 +63,29 @@ public class AnalysisController {
         Site site = storageService.getSite(siteId);
         model.put("site",site);
 
-        // Run async
-        // if(!site.isRunningAnalysis())   {
-        //     site.setRunningAnalysis(true);
-        //     storageService.store(site);
+        site.getDataFiles().stream().filter(d -> d.getStatus().equals(Status.NEW)).forEach(d -> {
+                analysisExecutors.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                    DataFile dataFile = storageService.getDataFile(siteId, d.getId());
 
-            site.getDataFiles().stream().filter(d -> d.getStatus().equals(Status.NEW)).forEach(d -> {
-                    analysisExecutors.submit(new Runnable() {
-                        @Override
-                        public void run() {
-                        DataFile dataFile = storageService.getDataFile(siteId, d.getId());
+                    // Convert audio and save in obj
+                    convertAudio.convert(dataFile);
 
-                        // Generate audio stats
-                        generateAudioStats.generate(dataFile);
+                    // Generate audio stats
+                    generateAudioStats.generate(dataFile);
 
-                        // Detect voice
-                        detectHumanVoice.detectVoice(dataFile);
-                        
-                        // Change status
-                        dataFile.setStatus(Status.ANALYZED);
+                    // Detect voice
+                    detectHumanVoice.detectVoice(dataFile);
+                    
+                    // Change status
+                    dataFile.setStatus(Status.ANALYZED);
 
-                        // save back
-                        storageService.storeDataFile(siteId, dataFile);
-                    }
-                });
+                    // save back
+                    storageService.storeDataFile(siteId, dataFile);
+                }
             });
-        //}
+        });
          
         model.put("msgs", Arrays.asList(new String[]{"Running full site analysis in the background, refresh the page for progress"}));
         return new ModelAndView("site",model);

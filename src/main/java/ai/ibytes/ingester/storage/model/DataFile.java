@@ -26,9 +26,11 @@ public class DataFile {
     private String path;
     private String name;
 
+    private byte[] audioBytes;
+
     private byte[] waveFormBytes;
 
-    @Builder.Default
+    @Builder.Default @JsonIgnore
     private boolean voiceDetected = false;
 
     @Builder.Default
@@ -42,6 +44,10 @@ public class DataFile {
 
     private RMSAnalysis rmsAnalysis;
     private PeakAnalysis peakAnalysis;
+
+    public boolean isVoiceDetected()    {
+        return( voiceDetectTimes.size() > 0 );
+    }
 
     public String getId()   {
         return( UUID.nameUUIDFromBytes( (path+name).getBytes() ).toString() );

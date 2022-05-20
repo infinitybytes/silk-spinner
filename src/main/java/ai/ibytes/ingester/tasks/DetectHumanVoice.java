@@ -1,6 +1,6 @@
 package ai.ibytes.ingester.tasks;
 
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -23,7 +23,7 @@ public class DetectHumanVoice {
         configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
         configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
         configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
-        configuration.setSampleRate(32000);
+        configuration.setSampleRate(16000);
         try {
             recognizer = new StreamSpeechRecognizer(configuration);
         } catch (IOException e) {
@@ -39,11 +39,7 @@ public class DetectHumanVoice {
      * @throws IOException
      */
     public void detectVoice(DataFile dataFile) {
-        try {
-            recognizer.startRecognition(new FileInputStream(dataFile.getPath()));
-        } catch (FileNotFoundException e) {
-            log.error("{}: Error recognizing voice",dataFile.getId(), e);
-        }
+        recognizer.startRecognition(new ByteArrayInputStream(dataFile.getAudioBytes()));
         
         SpeechResult result;
         while ((result = recognizer.getResult()) != null) {

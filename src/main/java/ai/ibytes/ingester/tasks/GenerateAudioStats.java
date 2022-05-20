@@ -27,6 +27,7 @@ public class GenerateAudioStats {
     
     public void generate(DataFile dataFile)    {
         File tmpOutput = new File("/tmp", UUID.randomUUID().toString());
+        File tmpBytes = new File(tmpOutput, "audio.wav");
         File peakOutput = new File(tmpOutput, "peak.json");
         File rmsOutput = new File(tmpOutput, "rms.json");
 
@@ -36,7 +37,7 @@ public class GenerateAudioStats {
             Process proc = new ProcessBuilder(
                     "sh",
                     appConfig.getRootDir()+"/generate-audio-stats.sh", 
-                    dataFile.getPath(), 
+                    tmpBytes.getAbsolutePath(), 
                     tmpOutput.getAbsolutePath() )
                 .inheritIO()
                 .redirectOutput(Redirect.DISCARD)
@@ -53,6 +54,7 @@ public class GenerateAudioStats {
         } finally {
             peakOutput.delete();
             rmsOutput.delete();
+            tmpBytes.delete();
             tmpOutput.delete();
         }
     }
