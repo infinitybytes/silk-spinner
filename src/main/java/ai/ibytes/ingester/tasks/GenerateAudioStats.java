@@ -33,7 +33,8 @@ public class GenerateAudioStats {
 
         try {
             Files.createDirectories(tmpOutput.toPath());
-            
+            Files.write(tmpBytes.toPath(), dataFile.getAudioBytes());
+
             Process proc = new ProcessBuilder(
                     "sh",
                     appConfig.getRootDir()+"/generate-audio-stats.sh", 
