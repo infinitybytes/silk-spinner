@@ -51,6 +51,12 @@ public class AnalysisController {
 
         // Detect voice
         detectHumanVoice.detectVoice(dataFile);
+
+        // Change status
+        dataFile.setStatus(Status.ANALYZED);
+
+        // save back
+        storageService.storeDataFile(siteId, dataFile);
         
         // Send to model
         model.put("dataFile",dataFile);
