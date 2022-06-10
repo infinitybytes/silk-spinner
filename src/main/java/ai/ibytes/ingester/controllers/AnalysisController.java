@@ -67,33 +67,47 @@ public class AnalysisController {
     @GetMapping( path="/analyze-site.html")
     public ModelAndView getAnalyzeSite(Map<String, Object> model, @RequestParam("siteId") String siteId) {
         Site site = storageService.getSite(siteId);
-        model.put("site",site);
 
-        site.getDataFiles().stream().filter(d -> d.getStatus().equals(Status.NEW)).forEach(d -> {
+        // Still running?
+        if(site.getNumAnalyzedFiles() == site.getNumSourceFiles())  {
+            site.setRunningAnalysis(false);
+        }
+
+        if(site.isRunningAnalysis())    {
+            model.put("msgs", Arrays.asList(new String[]{"Analysis currently running, refresh the page for progress"}));
+        }
+        else    {
+            // Mark as running
+            site.setRunningAnalysis(true);    
+
+            site.getDataFiles().stream().filter(d -> d.getStatus().equals(Status.NEW)).forEach(d -> {
                 analysisExecutors.submit(new Runnable() {
-                    @Override
-                    public void run() {
-                    DataFile dataFile = storageService.getDataFile(siteId, d.getId());
+                        @Override
+                        public void run() {
+                        DataFile dataFile = storageService.getDataFile(siteId, d.getId());
 
-                    // Convert audio and save in obj
-                    convertAudio.convert(dataFile);
+                        // Convert audio and save in obj
+                        convertAudio.convert(dataFile);
 
-                    // Generate audio stats
-                    generateAudioStats.generate(dataFile);
+                        // Generate audio stats
+                        generateAudioStats.generate(dataFile);
 
-                    // Detect voice
-                    detectHumanVoice.detectVoice(dataFile);
-                    
-                    // Change status
-                    dataFile.setStatus(Status.ANALYZED);
+                        // Detect voice
+                        detectHumanVoice.detectVoice(dataFile);
+                        
+                        // Change status
+                        dataFile.setStatus(Status.ANALYZED);
 
-                    // save back
-                    storageService.storeDataFile(siteId, dataFile);
-                }
+                        // save back
+                        storageService.storeDataFile(siteId, dataFile);
+                    }
+                });
             });
-        });
          
-        model.put("msgs", Arrays.asList(new String[]{"Running full site analysis in the background, refresh the page for progress"}));
+            model.put("msgs", Arrays.asList(new String[]{"Running full site analysis in the background, refresh the page for progress"}));
+        }
+
+        model.put("site",site);
         return new ModelAndView("site",model);
     }
 }
