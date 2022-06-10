@@ -48,7 +48,7 @@ public class SiteController {
 
     @GetMapping( path = "/delete-site.html")
     public ModelAndView getAddSitePage(Map<String, Object> model, @RequestParam("id") String id)   {
-        storageService.deleteSite(id);
+        //storageService.deleteSite(id);
         return new ModelAndView("redirect:/index.html", model);
     }
 

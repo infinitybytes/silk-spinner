@@ -22,6 +22,9 @@ public class Site {
     @JsonIgnore
     private String id;
 
+    @JsonIgnore
+    private String siteJsonPath;
+
     private String name;
     private String season;
     private String dataLocation;
@@ -41,5 +44,9 @@ public class Site {
 
     public long getNumAnalyzedFiles()   {
         return( dataFiles.stream().filter(df -> df.getStatus().equals(Status.ANALYZED)).count() );
+    }
+
+    public String getSiteJsonPath()   {
+        return( new StringBuffer(getId()).append(".json").toString() );
     }
 }

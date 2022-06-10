@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,17 +46,6 @@ public class FileSystemStorageService {
 				throw new StorageException("Unable to create storage location",e);
 			}
 		}
-
-		File siteJson = new File(this.dataFiles.toFile(), "sites.json");
-		if(!siteJson.exists())	{
-			List<Site> existingSites = new ArrayList<Site>();	
-			try {
-				objectMapper.writeValue(siteJson, existingSites);
-			} catch (IOException e) {
-				log.error("Error creating default sites.json",e);
-				throw new StorageException("Error creating default sites.json", e);
-			}
-		}
 	}
 
 	public Path getDataFilesPath()	{
@@ -66,19 +54,9 @@ public class FileSystemStorageService {
 
 	@Synchronized
 	public void store(Site site)	{
-		File siteLocation = new File(dataFiles.toFile(), "sites.json");
-		List<Site> existingSites = new ArrayList<Site>();
+		File siteLocation = new File(dataFiles.toFile(), site.getSiteJsonPath());
 		
 		try {
-			// Exists?
-			if(siteLocation.exists())	{
-				existingSites = Arrays.asList(
-					objectMapper.readValue(siteLocation, Site[].class))
-						.stream()
-						.filter(s -> !s.getId().equals(site.getId()))
-					.collect(Collectors.toList());
-			}
-
 			// Count raw source files
 			if(!site.isRunningAnalysis())	{
 				try (Stream<Path> files = Files.list(Paths.get(site.getDataLocation()))) {
@@ -97,42 +75,28 @@ public class FileSystemStorageService {
 				}
 			}
 
-			existingSites.add(site);
-			objectMapper.writeValue(siteLocation, existingSites);
+			objectMapper.writeValue(siteLocation, site);
 		} catch (IOException e) {
 			log.error("{}: Error saving Site to disk",site.getId(), e);
 			throw new StorageException("Error saving Site to disk",e);
 		}
 	}
 
-	@Synchronized
-	public void deleteSite(String id)	{
-		File siteLocation = new File(dataFiles.toFile(), "sites.json");
-		
-		try {
-			List<Site> existingSites = Arrays.asList(
-				objectMapper.readValue(siteLocation, Site[].class))
-					.stream()
-					.filter(s -> !s.getId().equals(id))
-				.collect(Collectors.toList());
-
-			objectMapper.writeValue(siteLocation, existingSites);
-		} catch (IOException e) {
-			log.error("{}: Error deleting Site",id, e);
-			throw new StorageException("Error deleting Site",e);
-		}
-	}
-
 	public List<Site> getSites()	{
-		File siteLocation = new File(dataFiles.toFile(), "sites.json");
 		List<Site> sites = new ArrayList<Site>();
 		
-		try {
-			sites = Arrays.asList(
-				objectMapper.readValue(siteLocation, Site[].class))
-					.stream()
-				.collect(Collectors.toList());
-		} catch (IOException e) {
+		try (Stream<Path> files = Files.list(dataFiles)) {
+			files.forEach(f -> {
+				if(f.toFile().getName().toUpperCase().endsWith(".JSON"))	{
+					try {
+						sites.add(objectMapper.readValue(f.toFile(), Site.class));
+					} catch (IOException e) {
+						log.error("Error getting Sites from disk", e);
+						throw new StorageException("Error getting Sites from disk",e);
+					}
+				}
+			});
+		}  catch (IOException e) {
 			log.error("Error getting Sites from disk", e);
 			throw new StorageException("Error getting Sites from disk",e);
 		}
@@ -141,15 +105,10 @@ public class FileSystemStorageService {
 	}
 
 	public Site getSite(String id)	{
-		File siteLocation = new File(dataFiles.toFile(), "sites.json");
+		File siteLocation = new File(dataFiles.toFile(), (id + ".json"));
 		Site site = new Site();
 		try {
-			site = (Site)Arrays.asList(
-				objectMapper.readValue(siteLocation, Site[].class))
-					.stream()
-					.filter(s -> s.getId().equals(id))
-					.findFirst()
-				.get();
+			site = objectMapper.readValue(siteLocation, Site.class);
 		} catch (IOException e) {
 			log.error("{}: Error getting Site from disk",id, e);
 			throw new StorageException("Error getting Site from disk",e);
