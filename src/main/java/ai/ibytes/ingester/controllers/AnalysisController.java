@@ -80,28 +80,28 @@ public class AnalysisController {
             // Mark as running
             site.setRunningAnalysis(true);    
 
-            site.getDataFiles().stream().filter(d -> d.getStatus().equals(Status.NEW)).forEach(d -> {
-                analysisExecutors.submit(new Runnable() {
-                        @Override
-                        public void run() {
+            analysisExecutors.submit(new Runnable() {
+                @Override
+                public void run() {
+                    site.getDataFiles().stream().filter(d -> d.getStatus().equals(Status.NEW)).forEach(d -> {
                         DataFile dataFile = storageService.getDataFile(siteId, d.getId());
 
                         // Convert audio and save in obj
                         convertAudio.convert(dataFile);
-
+    
                         // Generate audio stats
                         generateAudioStats.generate(dataFile);
-
+    
                         // Detect voice
                         detectHumanVoice.detectVoice(dataFile);
                         
                         // Change status
                         dataFile.setStatus(Status.ANALYZED);
-
+    
                         // save back
                         storageService.storeDataFile(siteId, dataFile);
-                    }
-                });
+                    });
+                }
             });
          
             model.put("msgs", Arrays.asList(new String[]{"Running full site analysis in the background, refresh the page for progress"}));
