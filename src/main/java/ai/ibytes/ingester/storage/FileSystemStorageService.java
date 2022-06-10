@@ -82,6 +82,7 @@ public class FileSystemStorageService {
 		}
 	}
 
+	@Synchronized
 	public List<Site> getSites()	{
 		List<Site> sites = new ArrayList<Site>();
 		
@@ -104,6 +105,7 @@ public class FileSystemStorageService {
 		return sites;
 	}
 
+	@Synchronized
 	public Site getSite(String id)	{
 		File siteLocation = new File(dataFiles.toFile(), (id + ".json"));
 		Site site = new Site();
@@ -117,6 +119,7 @@ public class FileSystemStorageService {
 		return site;
 	}
 
+	@Synchronized
 	public DataFile getDataFile(String siteId, String id)	{
 		Site site = getSite(siteId);
 		return site.getDataFiles()

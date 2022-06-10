@@ -68,22 +68,25 @@ public class AnalysisController {
     public ModelAndView getAnalyzeSite(Map<String, Object> model, @RequestParam("siteId") String siteId) {
         Site site = storageService.getSite(siteId);
 
-        // Still running?
-        if(site.getNumAnalyzedFiles() == site.getNumSourceFiles())  {
-            site.setRunningAnalysis(false);
-        }
-
         if(site.isRunningAnalysis())    {
             model.put("msgs", Arrays.asList(new String[]{"Analysis currently running, refresh the page for progress"}));
+
+            // Still running?
+            if(site.getNumAnalyzedFiles() == site.getNumSourceFiles())  {
+                site.setRunningAnalysis(false);
+
+                storageService.store(site);
+            }
         }
         else    {
             // Mark as running
-            site.setRunningAnalysis(true);    
+            site.setRunningAnalysis(true);  
+            storageService.store(site);
 
-            analysisExecutors.submit(new Runnable() {
-                @Override
-                public void run() {
-                    site.getDataFiles().stream().filter(d -> d.getStatus().equals(Status.NEW)).forEach(d -> {
+            site.getDataFiles().stream().filter(d -> d.getStatus().equals(Status.NEW)).forEach(d -> {
+               // analysisExecutors.submit(new Runnable() {
+                //    @Override
+                //    public void run() {
                         DataFile dataFile = storageService.getDataFile(siteId, d.getId());
 
                         // Convert audio and save in obj
@@ -94,17 +97,17 @@ public class AnalysisController {
     
                         // Detect voice
                         detectHumanVoice.detectVoice(dataFile);
-                        
+
                         // Change status
                         dataFile.setStatus(Status.ANALYZED);
-    
+
                         // save back
                         storageService.storeDataFile(siteId, dataFile);
-                    });
-                }
+              //      }
+              //  });
             });
          
-            model.put("msgs", Arrays.asList(new String[]{"Running full site analysis in the background, refresh the page for progress"}));
+            model.put("msgs", Arrays.asList(new String[]{"Finished analysis."}));
         }
 
         model.put("site",site);
