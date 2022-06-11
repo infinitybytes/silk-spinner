@@ -35,16 +35,16 @@
               <tr>
                 <th>Source File</th>
                 <th>Status</th>
-                <th>Tags</th>
+                <th>Human Detected</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
             {{#site.dataFiles}}
               <tr>
-                <td><a href="/file.html?site={{site.id}}&id={{id}}">{{name}}</a><br /><em>{{path}}</em></td>
+                <td><a href="/file.html?site={{site.id}}&id={{id}}">{{name}}</a></td>
                 <td>{{status}}</td>
-                <td>{{tags}}</td>
+                <td>{{voiceDetected}}</td>
                 <td>
                   <div class="btn-group" role="group" aria-label="Actions">
                     <a class="btn btn-primary" href="/file.html?siteId={{site.id}}&id={{id}}">View</a>

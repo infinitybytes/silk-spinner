@@ -15,6 +15,8 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Frame {
     private String pkt_pts_time;
+
+    @JsonIgnore
     private Map<String, String> tags;
 
     @JsonIgnore

@@ -2,6 +2,7 @@ package ai.ibytes.ingester.controllers;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -21,7 +22,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ai.ibytes.ingester.storage.FileSystemStorageService;
 import ai.ibytes.ingester.storage.exceptions.StorageException;
-import ai.ibytes.ingester.storage.model.DataFile;
 import ai.ibytes.ingester.storage.model.Site;
 import lombok.extern.slf4j.Slf4j;
 
@@ -91,7 +91,59 @@ public class SiteController {
         
         try {
             csvMapper
-                .writerFor(DataFile.class)
+                .writerFor(List.class)
+                .with(schema)
+                .writeValue(response.getWriter(), site.getDataFiles());
+        } catch (IOException e) {
+           log.error("Error creating SITE CSV",e);
+        }
+    }
+
+    @GetMapping("/export-rms.html")
+    public void getSiteRMSCsv(@RequestParam("id") String id, HttpServletResponse response)   {
+        log.info("Exporting to CSV SITE ID {}", id);
+        
+        Site site = storageService.getSite(id);
+
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename="+site.getSiteCsvRMSFilename());
+        
+        CsvMapper csvMapper = new CsvMapper();
+        Builder csvSchemaBuilder = CsvSchema.builder();
+        CsvSchema schema = csvSchemaBuilder
+            .addColumn("pkt_pts_time")
+            .addColumn("decibal")
+        .build().withHeader();
+        
+        try {
+            csvMapper
+                .writerFor(List.class)
+                .with(schema)
+                .writeValue(response.getWriter(), site.getDataFiles());
+        } catch (IOException e) {
+           log.error("Error creating SITE CSV",e);
+        }
+    }
+
+    @GetMapping("/export-peak.html")
+    public void getSitePEAKCsv(@RequestParam("id") String id, HttpServletResponse response)   {
+        log.info("Exporting to CSV SITE ID {}", id);
+        
+        Site site = storageService.getSite(id);
+
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename="+site.getSiteCsvPEAKFilename());
+        
+        CsvMapper csvMapper = new CsvMapper();
+        Builder csvSchemaBuilder = CsvSchema.builder();
+        CsvSchema schema = csvSchemaBuilder
+            .addColumn("pkt_pts_time")
+            .addColumn("decibal")
+        .build().withHeader();
+        
+        try {
+            csvMapper
+                .writerFor(List.class)
                 .with(schema)
                 .writeValue(response.getWriter(), site.getDataFiles());
         } catch (IOException e) {

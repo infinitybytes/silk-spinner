@@ -24,29 +24,37 @@ public class DataFile {
     private String id;
 
     private String path;
+
     private String name;
 
     private byte[] audioBytes;
 
     private byte[] waveFormBytes;
 
-    @Builder.Default @JsonIgnore
+    @Builder.Default
     private boolean voiceDetected = false;
 
     @Builder.Default
     private Status status = Status.NEW;
 
-    @Builder.Default
+    @Builder.Default @JsonIgnore
     private List<Tags> tags = new ArrayList<Tags>();
 
     @Builder.Default
     private List<Long> voiceDetectTimes = new ArrayList<>();
 
     private RMSAnalysis rmsAnalysis;
+
     private PeakAnalysis peakAnalysis;
 
+    public boolean getVoiceDetected()    {
+        voiceDetected = voiceDetectTimes.size() > 0;
+        return voiceDetected;
+    }
+
     public boolean isVoiceDetected()    {
-        return( voiceDetectTimes.size() > 0 );
+        voiceDetected = voiceDetectTimes.size() > 0;
+        return voiceDetected;
     }
 
     public String getId()   {
