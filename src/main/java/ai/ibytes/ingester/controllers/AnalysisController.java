@@ -1,6 +1,5 @@
 package ai.ibytes.ingester.controllers;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -68,20 +67,20 @@ public class AnalysisController {
     public ModelAndView getAnalyzeSite(Map<String, Object> model, @RequestParam("siteId") String siteId) {
         Site site = storageService.getSite(siteId);
 
-        if(site.isRunningAnalysis())    {
-            model.put("msgs", Arrays.asList(new String[]{"Analysis currently running, refresh the page for progress"}));
+        // if(site.isRunningAnalysis())    {
+        //     model.put("msgs", Arrays.asList(new String[]{"Analysis currently running, refresh the page for progress"}));
 
-            // Still running?
-            if(site.getNumAnalyzedFiles() == site.getNumSourceFiles())  {
-                site.setRunningAnalysis(false);
+        //     // Still running?
+        //     if(site.getNumAnalyzedFiles() == site.getNumSourceFiles())  {
+        //         site.setRunningAnalysis(false);
 
-                storageService.store(site);
-            }
-        }
-        else    {
-            // Mark as running
-            site.setRunningAnalysis(true);  
-            storageService.store(site);
+        //         storageService.store(site);
+        //     }
+        // }
+        // else    {
+        //     // Mark as running
+        //     site.setRunningAnalysis(true);  
+        //     storageService.store(site);
 
             site.getDataFiles().stream().filter(d -> d.getStatus().equals(Status.NEW)).forEach(d -> {
                // analysisExecutors.submit(new Runnable() {
@@ -107,8 +106,8 @@ public class AnalysisController {
               //  });
             });
          
-            model.put("msgs", Arrays.asList(new String[]{"Finished analysis."}));
-        }
+        //     model.put("msgs", Arrays.asList(new String[]{"Finished analysis."}));
+        // }
 
         model.put("site",site);
         return new ModelAndView("site",model);

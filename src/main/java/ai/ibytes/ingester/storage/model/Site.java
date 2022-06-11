@@ -25,6 +25,9 @@ public class Site {
     @JsonIgnore
     private String siteJsonPath;
 
+    @JsonIgnore
+    private String siteCsvFilename;
+
     private String name;
     private String season;
     private String dataLocation;
@@ -48,5 +51,9 @@ public class Site {
 
     public String getSiteJsonPath()   {
         return( new StringBuffer(getId()).append(".json").toString() );
+    }
+
+    public String getSiteCsvFilename()  {
+        return( new StringBuffer(season).append("_").append(name).append(".csv").toString() );
     }
 }
